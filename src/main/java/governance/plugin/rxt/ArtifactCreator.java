@@ -1,4 +1,4 @@
-package governance.plugin.rxt.artifact;
+package governance.plugin.rxt;
 
 import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.GovernanceSOAPMessageCreator;

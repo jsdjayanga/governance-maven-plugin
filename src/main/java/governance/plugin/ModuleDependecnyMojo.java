@@ -16,14 +16,12 @@ package governance.plugin;
  * limitations under the License.
  */
 
-import governance.plugin.rxt.artifact.ArtifactCreator;
-import governance.plugin.rxt.module.ModuleCreator;
+import governance.plugin.rxt.ArtifactCreator;
+import governance.plugin.rxt.ModuleCreator;
 
 import java.io.File;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -34,7 +32,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.Profile;
 
 /**
  * Generates dependency tree by reading a pom.xml
