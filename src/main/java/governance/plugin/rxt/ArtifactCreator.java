@@ -1,7 +1,8 @@
-package governance.plugin.rxt;
+package governance.plugin.rxt.artifact;
 
 import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.GovernanceSOAPMessageCreator;
+import governance.plugin.rxt.AbstractAssetCreator;
 
 
 import org.apache.maven.plugin.MojoExecutionException;
