@@ -2,7 +2,7 @@
 <artifactType type="application/vnd.wso2-module+xml" shortName="module" singularLabel="Module" pluralLabel="Modules" hasNamespace="false" iconSet="27">
     <storagePath>/trunk/modules/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
-    <lifecycle>SampleLifeCycle2</lifecycle>
+    <lifecycle>SimpleLifeCycle</lifecycle>
     <ui>
         <list>
             <column name="Module Name">

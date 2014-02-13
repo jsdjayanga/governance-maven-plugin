@@ -1,14 +1,14 @@
 <artifactType type="application/vnd.wso2-artifact+xml" shortName="artifact" singularLabel="Artifact" pluralLabel="Artifacts" hasNamespace="false" iconSet="27">
-    <storagePath>/trunk/artifacts/@{overview_group}/@{overview_artifact}/@{overview_version}</storagePath>
+    <storagePath>/trunk/artifacts/@{overview_group}/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_artifact</nameAttribute>
-    <!--lifecycle>ServiceLifeCycle</lifecycle-->
+    <lifecycle>SimpleLifeCycle</lifecycle>
     <ui>
         <list>
             <column name="Group ID">
                 <data type="path" value="overview_group" href="@{storagePath}"/>
             </column>
             <column name="Artifact ID">
-                <data type="path" value="overview_artifact" href="@{storagePath}"/>
+                <data type="path" value="overview_name" href="@{storagePath}"/>
             </column>
  	    <column name="Version">
                 <data type="text" value="overview_version"/>
@@ -20,14 +20,20 @@
     </ui>
     <content>
         <table name="Overview">
+	    <field type="text" required="true">
+                <name>Provider</name>
+            </field>
             <field type="text" required="true" readonly="true">
                 <name label="Group">Group</name>
             </field>
 	    <field type="text" required="true" readonly="true">
-                <name label="Artifact">Artifact</name>
+                <name label="Artifact">Name</name>
             </field>
             <field type="text" required="true" readonly="true">
                 <name label="Version">Version</name>
+            </field>
+	    <field type="text">
+                <name label="Description">Description</name>
             </field>
 	    <field type="options">
 	     	<name label="Approved">Approved</name>
@@ -41,6 +47,14 @@
     	    </field>
             <field type="text">
                 <name label="Licence">Licence</name>
+            </field>
+        </table>
+	<table name="Images">
+            <field type="text" required="true">
+                <name>Thumbnail</name>
+            </field>
+            <field type="text" required="true">
+                <name>Banner</name>
             </field>
         </table>
     </content>
