@@ -64,9 +64,9 @@ public class GovernanceSOAPMessageCreator {
         soapRequest.append("<ser:info>");
         soapRequest.append("<![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview><group>");
         soapRequest.append(groupId);
-        soapRequest.append("</group><artifact>");
+        soapRequest.append("</group><name>");
         soapRequest.append(artifactId);
-        soapRequest.append("</artifact>");
+        soapRequest.append("</name>");
         soapRequest.append("<version>");
         soapRequest.append(version);
         soapRequest.append("</version>");
