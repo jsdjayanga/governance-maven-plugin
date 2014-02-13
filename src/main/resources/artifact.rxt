@@ -1,0 +1,47 @@
+<artifactType type="application/vnd.wso2-artifact+xml" shortName="artifact" singularLabel="Artifact" pluralLabel="Artifacts" hasNamespace="false" iconSet="27">
+    <storagePath>/trunk/artifacts/@{overview_group}/@{overview_artifact}/@{overview_version}</storagePath>
+    <nameAttribute>overview_artifact</nameAttribute>
+    <!--lifecycle>ServiceLifeCycle</lifecycle-->
+    <ui>
+        <list>
+            <column name="Group ID">
+                <data type="path" value="overview_group" href="@{storagePath}"/>
+            </column>
+            <column name="Artifact ID">
+                <data type="path" value="overview_artifact" href="@{storagePath}"/>
+            </column>
+ 	    <column name="Version">
+                <data type="text" value="overview_version"/>
+            </column>
+	    <column name="Approved">
+                <data type="text" value="overview_approved"/>
+            </column>
+        </list>
+    </ui>
+    <content>
+        <table name="Overview">
+            <field type="text" required="true" readonly="true">
+                <name label="Group">Group</name>
+            </field>
+	    <field type="text" required="true" readonly="true">
+                <name label="Artifact">Artifact</name>
+            </field>
+            <field type="text" required="true" readonly="true">
+                <name label="Version">Version</name>
+            </field>
+	    <field type="options">
+	     	<name label="Approved">Approved</name>
+		<values>
+			<value>FALSE</value>
+			<value>TRUE</value>
+		</values>
+	    </field>
+	    <field type="date">
+     		<name label="Valid Until">Valid Until</name>
+    	    </field>
+            <field type="text">
+                <name label="Licence">Licence</name>
+            </field>
+        </table>
+    </content>
+</artifactType>
