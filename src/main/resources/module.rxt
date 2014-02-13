@@ -1,7 +1,8 @@
+<?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-module+xml" shortName="module" singularLabel="Module" pluralLabel="Modules" hasNamespace="false" iconSet="27">
     <storagePath>/trunk/modules/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
-    <!--lifecycle>ServiceLifeCycle</lifecycle-->
+    <lifecycle>SimpleLifeCycle</lifecycle>
     <ui>
         <list>
             <column name="Module Name">
@@ -17,6 +18,9 @@
     </ui>
     <content>
         <table name="Overview">
+	    <field type="text" required="true">
+                <name>Provider</name>
+            </field>
             <field type="text" required="true" readonly="true">
                 <name label="Name">Name</name>
             </field>
@@ -39,7 +43,13 @@
 		</values>
 	    </field>
         </table>
+	<table name="Images">
+            <field type="text" required="true">
+                <name>Thumbnail</name>
+            </field>
+            <field type="text" required="true">
+                <name>Banner</name>
+            </field>
+        </table>
     </content>
 </artifactType>
-
-

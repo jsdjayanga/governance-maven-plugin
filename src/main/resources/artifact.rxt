@@ -1,6 +1,6 @@
 <artifactType type="application/vnd.wso2-artifact+xml" shortName="artifact" singularLabel="Artifact" pluralLabel="Artifacts" hasNamespace="false" iconSet="27">
     <storagePath>/trunk/artifacts/@{overview_group}/@{overview_name}/@{overview_version}</storagePath>
-    <nameAttribute>overview_artifact</nameAttribute>
+    <nameAttribute>overview_name</nameAttribute>
     <lifecycle>SimpleLifeCycle</lifecycle>
     <ui>
         <list>
@@ -42,7 +42,7 @@
 			<value>TRUE</value>
 		</values>
 	    </field>
-	    <field type="date">
+	    <field type="text">
      		<name label="Valid Until">Valid Until</name>
     	    </field>
             <field type="text">

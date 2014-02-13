@@ -39,7 +39,7 @@ import org.apache.maven.settings.Profile;
 /**
  * Generates dependency tree by reading a pom.xml
  */
-@Mojo( name = "gen", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
+@Mojo( name = "module", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
 public class ModuleDependecnyMojo extends AbstractMojo
 {
  	@Parameter ( defaultValue = "${project}" )
