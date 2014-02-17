@@ -3,6 +3,9 @@ package governance.plugin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +69,13 @@ public class MavenDependencyVersionResolver {
 	public static void runDependencyMavenPlugin(String location) throws MojoExecutionException{
         try {
         	System.out.println("Running " + MAVEN_COMMAND + " on " + location + ". This might take few minutes....");
-        	Process mavenCommandProcess;
-            mavenCommandProcess = Runtime.getRuntime().exec(MAVEN_COMMAND, null,new File(location));
+        	Process mavenCommandProcess = Runtime.getRuntime().exec(MAVEN_COMMAND, null,new File(location));
+        	
+        	String currentInput;
+        	BufferedReader input = new BufferedReader(new InputStreamReader(mavenCommandProcess.getInputStream()));
+        	while ((currentInput = input.readLine()) != null) {//Draining output
+        	}
+        	
             mavenCommandProcess.waitFor();
             if (mavenCommandProcess.exitValue() != 0){
             	System.out.println("------------------------------------------------------------------------------------------------");
