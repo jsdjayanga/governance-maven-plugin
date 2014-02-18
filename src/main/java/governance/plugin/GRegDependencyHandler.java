@@ -38,7 +38,7 @@ public class GRegDependencyHandler {
 		
 		String response = RegistrySOAPClient.sendMessage(relationServiceEndPointRef, getDependencyTreeRequt);
 		
-		Document responseMessage = RegistrySOAPClient.parseXmlString(RegistrySOAPClient.stripMessage(response));
+		Document responseMessage = XmlParser.parseXmlString(RegistrySOAPClient.stripMessage(response));
 		NodeList nodes = responseMessage.getElementsByTagName(GREG_DEP_TREE_ELEMENT_NAME);
 
 		if (logger.isDebugEnabled()){

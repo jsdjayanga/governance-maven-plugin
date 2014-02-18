@@ -119,7 +119,7 @@
             "name": "lifeCycle",
             "table": "*",
             "label": "Life Cycle",
-            "value": "SampleLifeCycle2"
+            "value": "ModuleLifeCycle"
         } ,
         {
             "name": "banner",

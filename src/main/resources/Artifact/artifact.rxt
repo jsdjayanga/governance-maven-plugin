@@ -1,7 +1,7 @@
 <artifactType type="application/vnd.wso2-artifact+xml" shortName="artifact" singularLabel="Artifact" pluralLabel="Artifacts" hasNamespace="false" iconSet="27">
     <storagePath>/trunk/artifacts/@{overview_group}/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
-    <lifecycle>SimpleLifeCycle</lifecycle>
+    <lifecycle>ArtifactLifeCycle</lifecycle>
     <ui>
         <list>
             <column name="Group ID">
@@ -13,9 +13,6 @@
  	    <column name="Version">
                 <data type="text" value="overview_version"/>
             </column>
-	    <column name="Approved">
-                <data type="text" value="overview_approved"/>
-            </column>
         </list>
     </ui>
     <content>
@@ -24,10 +21,10 @@
                 <name>Provider</name>
             </field>
             <field type="text" required="true" readonly="true">
-                <name label="Group">Group</name>
+                <name label="Group ID">Group</name>
             </field>
 	    <field type="text" required="true" readonly="true">
-                <name label="Artifact">Name</name>
+                <name label="Artifact ID">Name</name>
             </field>
             <field type="text" required="true" readonly="true">
                 <name label="Version">Version</name>
@@ -35,13 +32,6 @@
 	    <field type="text">
                 <name label="Description">Description</name>
             </field>
-	    <field type="options">
-	     	<name label="Approved">Approved</name>
-		<values>
-			<value>FALSE</value>
-			<value>TRUE</value>
-		</values>
-	    </field>
 	    <field type="text">
      		<name label="Valid Until">Valid Until</name>
     	    </field>

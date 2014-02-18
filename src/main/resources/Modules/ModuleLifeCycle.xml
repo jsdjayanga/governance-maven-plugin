@@ -1,0 +1,58 @@
+<aspect name="ModuleLifeCycle" class="org.wso2.jaggery.scxml.aspects.JaggeryTravellingPermissionLifeCycle">
+    <configuration type="literal">
+        <lifecycle>
+            <scxml xmlns="http://www.w3.org/2005/07/scxml"
+                   version="1.0"
+                   initialstate="Active">
+                <state id="Active">
+                    <datamodel>
+                        <data name="transitionExecution">
+                            <execution forEvent="Inactivate" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Inactive"
+                                           value="Internal/private_{asset_author}:+add,-delete,+authorize"/>
+                                <parameter name="STATE_RULE2:Inactive"
+                                           value="Internal/reviewer:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE3:Inactive"
+                                           value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                        </data>
+                    </datamodel>
+                    <transition event="Inactivate" target="Inactive"/>
+                </state>
+                <state id="Inactive">
+                    <datamodel>
+                        <data name="transitionExecution">
+                            <execution forEvent="Activate" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Active"
+                                           value="Internal/private_{asset_author}:+add,-delete,+authorize"/>
+                                <parameter name="STATE_RULE2:Active"
+                                           value="Internal/reviewer:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE3:Active"
+                                           value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                          
+                        </data>
+                    </datamodel>
+                    <transition event="Activate" target="Active"/>
+                </state>
+
+            </scxml>
+        </lifecycle>
+    </configuration>
+</aspect>

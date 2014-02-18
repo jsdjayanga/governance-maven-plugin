@@ -98,20 +98,5 @@ public class RegistrySOAPClient {
 		return input.substring(startingIndex, lastIndex + 1);
 	}
 	
-	public static Document parseXmlString(String xmlString) throws MojoExecutionException{
-		DocumentBuilderFactory factory;
-		DocumentBuilder builder;
-		Document doc = null;
-		try{
-			factory = DocumentBuilderFactory.newInstance();
-			builder = factory.newDocumentBuilder();
-			
-			doc = builder.parse(new ByteArrayInputStream(xmlString.getBytes()));
-		}
-		catch(Exception e){
-			throw new MojoExecutionException(e.getMessage());
-		}
-		
-		return doc;
-	}
+	
 }

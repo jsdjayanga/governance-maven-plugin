@@ -3,6 +3,7 @@ package governance.plugin.rxt;
 import governance.plugin.GovernanceSOAPMessageCreator;
 import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.RegistrySOAPClient;
+import governance.plugin.XmlParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,7 +36,7 @@ public class AssetCreatorUtil {
 	        Document doc = null;
 	        String textContent = null;
             try {
-	            doc = RegistrySOAPClient.parseXmlString(RegistrySOAPClient.stripMessage(responseString));
+	            doc = XmlParser.parseXmlString(RegistrySOAPClient.stripMessage(responseString));
 	            NodeList nodes = doc.getElementsByTagName("ns:return");
 	            if (nodes != null && nodes.getLength() != 0){
 	            	Node returnNode = nodes.item(0);

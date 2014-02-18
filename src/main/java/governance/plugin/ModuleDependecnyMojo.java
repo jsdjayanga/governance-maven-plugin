@@ -144,12 +144,14 @@ public class ModuleDependecnyMojo extends AbstractMojo
     		pomFileCount++;
     		getLog().debug("Processing " + file.getAbsoluteFile());
     		
-    		Model model = PomParser.parse(file);
+    		Model model = XmlParser.parsePom(file);
     		if (model == null){
     			throw new MojoExecutionException("Error while processing  " + file.getAbsoluteFile());
     		}
+    		MavenProject project = new MavenProject(model);
     		
-        	MavenProject project = new MavenProject(model);
+    		EffectivePom effectivePom = new EffectivePom(file);
+        	project = effectivePom.fillChildProject(project);
         	
         	moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), file.getAbsolutePath()});
         	
@@ -157,8 +159,8 @@ public class ModuleDependecnyMojo extends AbstractMojo
         			getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
         	gregDependencyHandler.removeExistingAssociations(moduleAbsolutPath,  
         	                                                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
-        	List<Dependency> dependencies = 
-        			MavenDependencyVersionResolver.resolveDependencyVersions(project, file.getAbsolutePath());
+        	List<Dependency> dependencies = project.getDependencies();
+        			//MavenDependencyVersionResolver.resolveDependencyVersions(project, file.getAbsolutePath());
         	
         	for (Dependency dependency : dependencies){
         		String dependencyReosurcePath = getDependencyPath(dependency);
@@ -171,6 +173,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
         		gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath, 
         		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
         	}
+        	
     	}
     }  
     

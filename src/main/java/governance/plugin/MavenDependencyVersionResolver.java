@@ -3,8 +3,6 @@ package governance.plugin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +12,11 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
+/**
+ * @deprecated
+ * Use governance.plugin.EffectivePom instead of this
+ */
+@Deprecated
 public class MavenDependencyVersionResolver {
 	private static Map<String, String> resolvedVersions = new HashMap<String, String>();
 	private static boolean isDependenciesResolved = false;
@@ -71,7 +74,7 @@ public class MavenDependencyVersionResolver {
         	System.out.println("Running " + MAVEN_COMMAND + " on " + location + ". This might take few minutes....");
         	Process mavenCommandProcess = Runtime.getRuntime().exec(MAVEN_COMMAND, null,new File(location));
         	
-        	String currentInput;
+        	String currentInput = null;
         	BufferedReader input = new BufferedReader(new InputStreamReader(mavenCommandProcess.getInputStream()));
         	while ((currentInput = input.readLine()) != null) {//Draining output
         	}
