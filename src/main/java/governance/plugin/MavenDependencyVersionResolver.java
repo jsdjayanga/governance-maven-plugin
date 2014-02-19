@@ -92,7 +92,7 @@ public class MavenDependencyVersionResolver {
         }
 	}
 	
-	public static void readVersionsFromFile(String location) throws MojoExecutionException{
+	private static void readVersionsFromFile(String location) throws MojoExecutionException{
 		BufferedReader inputBuffer;
         try {
         	File outputFile = new File(location + File.separatorChar + OUTPUT_FILE_NAME);
@@ -108,7 +108,7 @@ public class MavenDependencyVersionResolver {
         }
 	}
 	
-	public static String makeKey(String groupId, String artifactId){
+	private static String makeKey(String groupId, String artifactId){
 		return groupId + "@" + artifactId;
 	}
 	

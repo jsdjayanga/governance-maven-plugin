@@ -9,6 +9,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 public class ArtifactCreator extends AbstractAssetCreator{
+	public static final String GREG_ARTIFACT_RESOURCE_PATH = "/trunk/artifacts/";
+	
 	private Log logger;
 	
 	public ArtifactCreator(Log logger, String gregServiceUrl) 
@@ -28,7 +30,7 @@ public class ArtifactCreator extends AbstractAssetCreator{
 		String artifactId = parameters[1];
 		String version = parameters[2];
 		
-		return ModuleDependecnyMojo.GREG_ARTIFACT_RESOURCE_PATH  + groupId + "/" + artifactId + "/" + version;
+		return ArtifactCreator.GREG_ARTIFACT_RESOURCE_PATH  + groupId + "/" + artifactId + "/" + version;
 	}
 	
 	@Override

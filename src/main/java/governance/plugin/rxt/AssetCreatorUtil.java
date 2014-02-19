@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 
 public class AssetCreatorUtil {
 
+	
 	private String genericArtifactManagerEndPointRef;
 	
 	public AssetCreatorUtil(String gregServiceUrl) throws MojoExecutionException{

@@ -8,6 +8,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 public abstract class  AbstractAssetCreator{
 
+	public static final String GREG_TRUNK_LOCATION = "/_system/governance";
+	
 	private int createdAssetCount = 0;
 	private int existingAssetCount = 0;
 	
@@ -57,6 +59,6 @@ public abstract class  AbstractAssetCreator{
 	}
 
 	public String getAbsoluteResourcePath(String[] parameters) throws MojoExecutionException{
-		return ModuleDependecnyMojo.GREG_TRUNK_LOCATION + getResourcePath(parameters);
+		return AbstractAssetCreator.GREG_TRUNK_LOCATION + getResourcePath(parameters);
 	}
 }

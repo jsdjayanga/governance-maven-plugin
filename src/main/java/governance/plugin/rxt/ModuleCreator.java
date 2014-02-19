@@ -9,6 +9,7 @@ import org.apache.maven.plugin.logging.Log;
 
 public class ModuleCreator extends AbstractAssetCreator{
 
+	public static final String GREG_MODULE_RESOURCE_PATH = "/trunk/modules/";
 	public static  String DEFAULT_MODULE_TYPE = "Unknown";
 	
 	private Log logger;
@@ -30,7 +31,7 @@ public class ModuleCreator extends AbstractAssetCreator{
 		String artifactID = parameters[0];
 		String version = parameters[1];
 		
-		return ModuleDependecnyMojo.GREG_MODULE_RESOURCE_PATH  + artifactID + "/" + version;
+		return ModuleCreator.GREG_MODULE_RESOURCE_PATH  + artifactID + "/" + version;
 	}
 	
 	/**

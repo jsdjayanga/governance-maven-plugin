@@ -60,11 +60,6 @@ public class ModuleDependecnyMojo extends AbstractMojo
     @Parameter( property = "gregHome")
 	private String gregHome;
     
-	//GReg resource paths
-	public static final String GREG_TRUNK_LOCATION = "/_system/governance";
-	public static final String GREG_MODULE_RESOURCE_PATH = "/trunk/modules/";
-	public static final String GREG_ARTIFACT_RESOURCE_PATH = "/trunk/artifacts/";
-	
 	private int pomFileCount = 0;
 	private int directoryCount = 0;
 

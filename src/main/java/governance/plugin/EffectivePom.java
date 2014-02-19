@@ -94,9 +94,9 @@ public class EffectivePom {
 	    	mavenCommandProcess.waitFor();
 	    	if (mavenCommandProcess.exitValue() != 0){
             	System.out.println("------------------------------------------------------------------------------------------------");
-            	System.out.println("WRNNING! running command '" + MAVEN_COMMAND + "' on '" + pomFileLocation +"' FAILED!");
+            	System.out.println("ERROR! running command '" + MAVEN_COMMAND + "' on '" + pomFileLocation +"' FAILED!");
             	System.out.println("------------------------------------------------------------------------------------------------");
-            	throw new MojoExecutionException("Cannot execute '" +  MAVEN_COMMAND+ "' on '" + pomFileLocation + "'! Please make sure this project has no build failures.");
+            	throw new MojoExecutionException("Cannot execute '" +  MAVEN_COMMAND + "'! Please make sure there are no build faiilures in the maven project @ " + pomFileLocation);
             }
             
             mavenCommandProcess.destroy();
