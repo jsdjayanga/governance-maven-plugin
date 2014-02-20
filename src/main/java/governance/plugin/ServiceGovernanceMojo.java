@@ -20,6 +20,8 @@ import governance.plugin.rxt.ModuleCreator;
 import governance.plugin.service.ServiceCreator;
 import governance.plugin.service.ServiceJavaFileParser;
 import governance.plugin.service.ServicesXMLParser;
+import governance.plugin.util.DirectoryScanner;
+import governance.plugin.util.POMFileCache;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -78,10 +80,8 @@ public class ServiceGovernanceMojo extends AbstractMojo
     private GRegDependencyHandler gregDependencyHandler;
     private Configurations configurations;
 
-    private Map<String, File> pomMap;
-
     public ServiceGovernanceMojo() throws MojoExecutionException{
-        pomMap = new HashMap<String, File>();
+
     }
 
     public void execute() throws MojoExecutionException
@@ -104,7 +104,7 @@ public class ServiceGovernanceMojo extends AbstractMojo
                 + "\njava Files Processed.............." + javaFileCount
                 + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nServices...........[Created:" + serviceCreator.getCreatedAssetCount()
+                + "\nServices........[Created:" + serviceCreator.getCreatedAssetCount()
                 + ", Existing:" + serviceCreator.getCreatedAssetCount() + "]"
                 + "\nAssocations.....[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
@@ -133,9 +133,9 @@ public class ServiceGovernanceMojo extends AbstractMojo
             if (children == null){
                 getLog().debug("Empty directory skipping.. :" + path);
             }else{
-                File pomFile = findPOMFileInCurrentDirectory(children);
+                File pomFile = DirectoryScanner.findFile(root, "pom.xml");
                 if (pomFile != null){
-                    pomMap.put(pomFile.getParent(), pomFile);
+                    POMFileCache.put(pomFile.getParent(), pomFile);
                 }
 
                 for (File child : children){
@@ -147,31 +147,6 @@ public class ServiceGovernanceMojo extends AbstractMojo
             process(new File(path));
         }
         getLog().debug("Finished scanning directory :" + path);
-    }
-
-    private File findNearestPOMFile(File file){
-        while (true){
-
-            File pomFile = pomMap.get(file.getParent());
-            if (pomFile != null){
-                return pomFile;
-            }
-            file = file.getParentFile();
-        }
-    }
-
-    private File findPOMFileInCurrentDirectory(File[] files){
-        File file = null;
-
-        for (int index = 0; index < files.length; index++){
-            file = files[index];
-            if (file != null && file.isFile()){
-                if (file.getName().equals("pom.xml")){
-                    return file;
-                }
-            }
-        }
-        return null;
     }
 
     public void process(File file) throws MojoExecutionException{
@@ -203,7 +178,7 @@ public class ServiceGovernanceMojo extends AbstractMojo
 
     public void linkServiceWithModule(Map<String, String> parameters, File file) throws MojoExecutionException {
 
-        File currentPOM = findNearestPOMFile(file);
+        File currentPOM = POMFileCache.getNearestPOM(file);
         if (currentPOM == null){
             throw new MojoExecutionException("Cannot find a POM related to this module. [file=" + file.getAbsolutePath() + "]");
         }

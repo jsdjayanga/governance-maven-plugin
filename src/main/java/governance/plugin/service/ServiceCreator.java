@@ -2,6 +2,7 @@ package governance.plugin.service;
 
 import governance.plugin.ServiceGovernanceMojo;
 import governance.plugin.rxt.AbstractAssetCreator;
+import governance.plugin.util.PathNameResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -64,15 +65,6 @@ public class ServiceCreator extends AbstractAssetCreator {
         String name = parameters[0];
         String namespace = parameters[1];
 
-        name = name.trim();
-        namespace = namespace.trim();
-
-        String[] path = namespace.substring("http://".length()).split("[.]");
-        StringBuilder sb = new StringBuilder();
-        for (int i = path.length - 1; i >= 0 ; i--){
-            if (path[i].trim().length() > 0) sb.append(path[i].trim() + "/");
-        }
-
-        return ServiceCreator.GREG_SERVICE_RESOURCE_PATH  + sb.toString() + name;
+        return PathNameResolver.getResourcePath(name, namespace, ServiceCreator.GREG_SERVICE_RESOURCE_PATH);
     }
 }

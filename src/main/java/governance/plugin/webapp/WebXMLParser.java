@@ -1,6 +1,6 @@
 package governance.plugin.webapp;
 
-import governance.plugin.util.PackageToNamespace;
+import governance.plugin.util.PathNameResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,7 +46,7 @@ public class WebXMLParser {
 
                             int dotOffSet = servletClassQName.lastIndexOf('.') + 1;
 
-                            String namespace = PackageToNamespace.PackageToNamespace(servletClassQName.substring(0, dotOffSet));
+                            String namespace = PathNameResolver.PackageToNamespace(servletClassQName.substring(0, dotOffSet));
                             namespace = namespace.toLowerCase();
 
                             //String serviceClassName = servletClassQName.substring(dotOffSet);

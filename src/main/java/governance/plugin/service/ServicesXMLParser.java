@@ -1,6 +1,6 @@
 package governance.plugin.service;
 
-import governance.plugin.util.PackageToNamespace;
+import governance.plugin.util.PathNameResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -92,7 +92,7 @@ public class ServicesXMLParser {
                                 if (dotOffSet == -1){
                                     dotOffSet = serviceClassName.length();
                                 }
-                                String namespace = PackageToNamespace.PackageToNamespace(serviceClassName.substring(0, dotOffSet));
+                                String namespace = PathNameResolver.PackageToNamespace(serviceClassName.substring(0, dotOffSet));
                                 return namespace;
                             }
                         }
