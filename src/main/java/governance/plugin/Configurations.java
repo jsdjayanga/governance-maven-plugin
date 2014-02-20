@@ -23,6 +23,8 @@ public class Configurations{
     private String gregPassword;
     
 	private String gregHome;
+	
+	private String buildProfile;
     
     
     private static String MAVEN_PROFILE_NAME = "governance-plugin-profile";
@@ -31,11 +33,12 @@ public class Configurations{
     private static String SETTINGS_ELEMENT_GREG_PASSWORD = "greg.password";
     private static String SETTINGS_ELEMENT_GREG_HOME = "greg.home";
     private static String SETTINGS_ELEMENT_REPO_LOCATION = "repo.location";
+    private static String SETTINGS_ELEMENT_BUILD_PROFILE = "maven.build.profile.id";
     
     Properties properties = null;
     
     public Configurations(MavenProject project, Settings settings, String repoLocation, String gregServiceUrl, 
-                          String gregUserName, String gregPassword, String gregHome) throws MojoExecutionException{
+                          String gregUserName, String gregPassword, String gregHome, String buildProfile) throws MojoExecutionException{
     	this.project = project;
     	this.settings = settings;
     	this.repositoryLocation = repoLocation;
@@ -43,7 +46,7 @@ public class Configurations{
     	this.gregUserName = gregUserName;
     	this.gregPassword = gregPassword;
     	this.gregHome = gregHome;
-    	
+    	this.buildProfile = buildProfile;
     	initialize();
     }
     
@@ -58,6 +61,7 @@ public class Configurations{
     	gregUserName = readParameter(gregUserName, SETTINGS_ELEMENT_GREG_USER_NAME, "gregUsername", "admin");
     	gregPassword = readParameter(gregPassword, SETTINGS_ELEMENT_GREG_PASSWORD, "gregPassword", "admin");
     	repositoryLocation = readParameter(repositoryLocation, SETTINGS_ELEMENT_REPO_LOCATION, "location", project.getBasedir().getPath());
+    	buildProfile = readParameter(buildProfile, SETTINGS_ELEMENT_BUILD_PROFILE, "buildProfile", "default");
     	gregHome = readParameter(gregHome, SETTINGS_ELEMENT_GREG_HOME, "gregHome", null);
     }
     
@@ -75,7 +79,7 @@ public class Configurations{
     			}
     		}
     	}
-    	System.out.println("Setting value to parameter "+propertName+ "=" + parameter);
+    	//System.out.println("Setting value to parameter "+propertName+ "=" + parameter);
     	return parameter;
     }
     
@@ -109,5 +113,9 @@ public class Configurations{
     
     public String getRepoLocation(){
     	return repositoryLocation;
+    }
+    
+    public String getBuildProfileId(){
+    	return buildProfile;
     }
 }

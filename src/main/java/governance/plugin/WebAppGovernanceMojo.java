@@ -62,6 +62,8 @@ public class WebAppGovernanceMojo extends AbstractMojo
     @Parameter( property = "gregHome")
     private String gregHome;
 
+    @Parameter( property = "buildProfile")
+   	private String buildProfile;
     //GReg resource paths
 
 
@@ -83,7 +85,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
 
     public void execute() throws MojoExecutionException
     {
-        configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome);
+        configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome, buildProfile);
 
         gregDependencyHandler = new GRegDependencyHandler(getLog(), configurations.getGergServiceUrl());
         moduleCreator = new ModuleCreator(getLog(), configurations.getGergServiceUrl());

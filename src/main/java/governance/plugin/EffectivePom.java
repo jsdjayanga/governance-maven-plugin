@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -26,9 +27,11 @@ public class EffectivePom {
 
 	String pomFileLocation;
 	MavenProject effectiveProject;
+	Properties properties;
 	private static final String EFFECTIVE_POM_FILE ="effective-pom.xml";
 	private static final String MAVEN_COMMAND = "mvn help:effective-pom -Doutput=" + EFFECTIVE_POM_FILE;
 	private static final String MAVEN_PROPERTY_PLACE_HOLDER = "$";
+	private static final String MAVEN_PROJECT_GROUPID_PROPERTY = "${project.groupId}";
 	
 	private static Map<String, String> resolvedVersions = new HashMap<String, String>();
 	
@@ -36,7 +39,8 @@ public class EffectivePom {
 		this.pomFileLocation = pomFile.getAbsolutePath().substring(0, pomFile.getAbsolutePath().lastIndexOf(File.separatorChar));
 		runEffectivePomCommand();
 		createEffectiveProject();
-		indexDependencies();
+		indexDependencies(); 
+		this.properties = effectiveProject.getProperties();
     }
 	
 	private void indexDependencies() {
@@ -46,7 +50,7 @@ public class EffectivePom {
 	   }
     }
 
-	public static String makeKey(String groupId, String artifactId){
+	private String makeKey(String groupId, String artifactId){		
 		return groupId + "@" + artifactId;
 	}
 	
@@ -107,14 +111,34 @@ public class EffectivePom {
         }	
     }
 	
+	private String resolveProperties(String field){
+		String returnValue = null;
+		if (field.equals(MAVEN_PROJECT_GROUPID_PROPERTY)){
+			returnValue = effectiveProject.getGroupId();
+		}else{
+			String propertyValue = field.substring(field.indexOf('{') + 1, field.indexOf('}'));
+			returnValue = properties.getProperty(propertyValue);
+		}
+		return returnValue;
+	}
+	
 	public MavenProject fillChildProject(MavenProject childProject) throws MojoExecutionException{
 		childProject.setVersion(effectiveProject.getVersion());
-		
+		//TODO : Check for properties and fetch
 		//Filling unresolved versions
 		List<Dependency> dependencies = childProject.getDependencies();
 		for (Dependency dependency: dependencies){
 			if (dependency.getVersion() == null || dependency.getVersion().isEmpty() || 
 					dependency.getVersion().contains(MAVEN_PROPERTY_PLACE_HOLDER)){
+				
+				if (dependency.getGroupId().contains(MAVEN_PROPERTY_PLACE_HOLDER)){
+					dependency.setGroupId(resolveProperties(dependency.getGroupId()));
+				}
+				
+				if (dependency.getArtifactId().contains(MAVEN_PROPERTY_PLACE_HOLDER)){
+					dependency.setArtifactId(resolveProperties(dependency.getArtifactId()));
+				}
+				
     		    String resolvedVersion = resolvedVersions.get(makeKey(dependency.getGroupId(), dependency.getArtifactId()));
     		    if (resolvedVersion == null){
     			   throw new MojoExecutionException("Could not resolve the version of " + dependency.getGroupId() + ":" + dependency.getArtifactId());

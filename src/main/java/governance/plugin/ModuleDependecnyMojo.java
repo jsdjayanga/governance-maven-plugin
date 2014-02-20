@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -60,6 +61,9 @@ public class ModuleDependecnyMojo extends AbstractMojo
     @Parameter( property = "gregHome")
 	private String gregHome;
     
+    @Parameter( property = "buildProfile")
+   	private String buildProfile;
+    
 	private int pomFileCount = 0;
 	private int directoryCount = 0;
 
@@ -75,7 +79,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
     
     public void execute() throws MojoExecutionException
     {	
-    	configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome);
+    	configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome, buildProfile);
    	 
    	 	gregDependencyHandler = new GRegDependencyHandler(getLog(), configurations.getGergServiceUrl());
    	 	moduleCreator = new ModuleCreator(getLog(), configurations.getGergServiceUrl());
@@ -84,7 +88,8 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	configure();
     	
     	getLog().info("Starting to scan with root:" +  configurations.getRepoLocation());
-        scanDirectory(configurations.getRepoLocation());
+        //scanDirectory(configurations.getRepoLocation());
+    	scanPomTree(configurations.getRepoLocation());
     		
         getLog().info("SUMMARY:" 
         			  + "\nDirectories Scanned..............." + directoryCount 
@@ -113,6 +118,12 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
     }
     
+    /**
+     * @deprecated
+     * scanning through pom tree instead of the directory structure.
+     */
+    @SuppressWarnings("unused")
+    @Deprecated
     private void scanDirectory(String path) throws MojoExecutionException{
       	File root = new File(path);
     	if (root.isDirectory()){
@@ -132,18 +143,44 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	getLog().debug("Finished scanning directory :" + path);
     }
     
+    private void scanPomTree(String rootPomPath) throws MojoExecutionException{
+    	String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
+    	MavenProject project = process(new File(filePath));
+    	if (project == null){
+    		throw new MojoExecutionException("Cannot find pom.xml @ " + rootPomPath);
+    	}
+    	
+    	List<String> modules = project.getModules();
+    	
+    	List<Profile> profiles = project.getModel().getProfiles();
+    	for (Profile profile : profiles){
+    		if (profile.getId().equals(configurations.getBuildProfileId())){
+    			modules.addAll(profile.getModules());
+    			getLog().info("Adding modules of maven default with ID  '"  + configurations.getBuildProfileId() + "'");
+    		}
+    	}
+    	
+    	for (String module : modules){
+    		scanPomTree(rootPomPath.concat(File.separatorChar + module.replace('/', File.separatorChar)));
+    	}
+    }
+    
+    private MavenProject createMavenProject(File pomFile) throws MojoExecutionException{
+    	Model model = XmlParser.parsePom(pomFile);
+		if (model == null){
+			throw new MojoExecutionException("Error while processing  " + pomFile.getAbsoluteFile());
+		}
+		return new MavenProject(model);
+    }
    
         
-    public void process(File file) throws MojoExecutionException{
+    public MavenProject process(File file) throws MojoExecutionException{
+    	MavenProject project = null;
     	if (file.isFile() &&  file.getName().equals("pom.xml")){
     		pomFileCount++;
     		getLog().debug("Processing " + file.getAbsoluteFile());
-    		
-    		Model model = XmlParser.parsePom(file);
-    		if (model == null){
-    			throw new MojoExecutionException("Error while processing  " + file.getAbsoluteFile());
-    		}
-    		MavenProject project = new MavenProject(model);
+
+    		project = createMavenProject(file);
     		
     		EffectivePom effectivePom = new EffectivePom(file);
         	project = effectivePom.fillChildProject(project);
@@ -155,7 +192,6 @@ public class ModuleDependecnyMojo extends AbstractMojo
         	gregDependencyHandler.removeExistingAssociations(moduleAbsolutPath,  
         	                                                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
         	List<Dependency> dependencies = project.getDependencies();
-        			//MavenDependencyVersionResolver.resolveDependencyVersions(project, file.getAbsolutePath());
         	
         	for (Dependency dependency : dependencies){
         		String dependencyReosurcePath = getDependencyPath(dependency);
@@ -168,12 +204,12 @@ public class ModuleDependecnyMojo extends AbstractMojo
         		gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath, 
         		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
         	}
-        	
     	}
+    	return project;
     }  
     
     /**
-     * Check if there's 'Module' asset representing the given dependency, if there's is not 'Module' asset
+     * Check if there's 'Module' asset representing the given dependency, if there's is no 'Module' asset
      * create an 'Artifact' asset to represent the dependency
      * @param dependency Dependency to be added
      * @return If there's a module already created for the dependency, return the resource path of that module
