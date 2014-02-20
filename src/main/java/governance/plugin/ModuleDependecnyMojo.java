@@ -21,7 +21,11 @@ import governance.plugin.rxt.ModuleCreator;
 
 import java.io.File;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -71,11 +75,8 @@ public class ModuleDependecnyMojo extends AbstractMojo
 	private ArtifactCreator artifactCreator;
 	private GRegDependencyHandler gregDependencyHandler;
 	private Configurations configurations;
-
-
-    public ModuleDependecnyMojo() throws MojoExecutionException{
-    	 
-    }
+	
+	private Set<MavenProject> mavenProjects = new HashSet<MavenProject>();
     
     public void execute() throws MojoExecutionException
     {	
@@ -88,8 +89,8 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	configure();
     	
     	getLog().info("Starting to scan with root:" +  configurations.getRepoLocation());
-        //scanDirectory(configurations.getRepoLocation());
     	scanPomTree(configurations.getRepoLocation());
+    	createDependencies();
     		
         getLog().info("SUMMARY:" 
         			  + "\nDirectories Scanned..............." + directoryCount 
@@ -118,34 +119,32 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
     }
     
-    /**
-     * @deprecated
-     * scanning through pom tree instead of the directory structure.
-     */
-    @SuppressWarnings("unused")
-    @Deprecated
-    private void scanDirectory(String path) throws MojoExecutionException{
-      	File root = new File(path);
-    	if (root.isDirectory()){
-    		directoryCount++;
-    		File[] children = root.listFiles();
-    		if (children == null){
-       		 	getLog().debug("Empty directoy skipping.. :" + path);
-    		}else{
-    			for (File child : children){
-    				scanDirectory(child.getAbsolutePath());
-    			}
-    		}
+    private void createDependencies() throws MojoExecutionException{
+    	for (MavenProject project: mavenProjects){
+    		String moduleAbsolutPath = moduleCreator.
+        			getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
+        	
+        	gregDependencyHandler.removeExistingAssociations(moduleAbsolutPath);
+        	
+        	List<Dependency> dependencies = project.getDependencies();	
+        	for (Dependency dependency : dependencies){
+        		String dependencyReosurcePath = getDependencyPath(dependency);
+        		
+        		// Adding the dependency
+        		gregDependencyHandler.addAssociation(moduleAbsolutPath, dependencyReosurcePath, 
+        		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
+        		
+        		// Adding the invert association(i.e.dependency is usedBy source)
+        		gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath, 
+        		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
+        	}
     	}
-    	else{
-    		process(new File(path));
-    	}
-    	getLog().debug("Finished scanning directory :" + path);
     }
     
     private void scanPomTree(String rootPomPath) throws MojoExecutionException{
     	String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
-    	MavenProject project = process(new File(filePath));
+    	MavenProject project = createModule(new File(filePath));
+    	mavenProjects.add(project);
     	if (project == null){
     		throw new MojoExecutionException("Cannot find pom.xml @ " + rootPomPath);
     	}
@@ -156,7 +155,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	for (Profile profile : profiles){
     		if (profile.getId().equals(configurations.getBuildProfileId())){
     			modules.addAll(profile.getModules());
-    			getLog().info("Adding modules of maven default with ID  '"  + configurations.getBuildProfileId() + "'");
+    			getLog().info("Adding modules of maven profile with ID  '"  + configurations.getBuildProfileId() + "'");
     		}
     	}
     	
@@ -174,7 +173,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
     }
    
         
-    public MavenProject process(File file) throws MojoExecutionException{
+    public MavenProject createModule(File file) throws MojoExecutionException{
     	MavenProject project = null;
     	if (file.isFile() &&  file.getName().equals("pom.xml")){
     		pomFileCount++;
@@ -186,24 +185,6 @@ public class ModuleDependecnyMojo extends AbstractMojo
         	project = effectivePom.fillChildProject(project);
         	
         	moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), file.getAbsolutePath()});
-        	
-        	String moduleAbsolutPath = moduleCreator.
-        			getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
-        	gregDependencyHandler.removeExistingAssociations(moduleAbsolutPath,  
-        	                                                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
-        	List<Dependency> dependencies = project.getDependencies();
-        	
-        	for (Dependency dependency : dependencies){
-        		String dependencyReosurcePath = getDependencyPath(dependency);
-        		
-        		// Adding the dependency
-        		gregDependencyHandler.addAssociation(moduleAbsolutPath, dependencyReosurcePath, 
-        		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
-        		
-        		// Adding the invert association(i.e.dependency is usedBy source)
-        		gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath, 
-        		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
-        	}
     	}
     	return project;
     }  

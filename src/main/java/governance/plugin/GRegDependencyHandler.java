@@ -3,6 +3,7 @@ package governance.plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -14,7 +15,7 @@ public class GRegDependencyHandler {
 	public static final String GREG_ASSOCIATION_ACTION_ADD = "add";
 	public static final String GREG_ASSOCIATION_ACTION_REMOVE = "remove";
 	
-	public static final String GREG_DEP_TREE_ELEMENT_NAME = "ax2457:treeCache";
+	public static final String GREG_DEP_TREE_ELEMENT_NAME = "treeCache";
 	
 	private Log logger;
 	private String relationServiceEndPointRef;
@@ -27,19 +28,13 @@ public class GRegDependencyHandler {
 		this.relationServiceEndPointRef = gregServiceUrl + "RelationAdminService.RelationAdminServiceHttpsSoap11Endpoint";
 	}
 	/**
-	 * Delete all current dependencies of a given resource of a given type
+	 * Delete all current dependencies and usedBy associations of a given resource
 	 * @param absoluteResourcePath source resource path
 	 * @param type Type of the dependency
 	 * @throws MojoExecutionException 
 	 */
-	public void removeExistingAssociations(String absoluteResourcePath, String type) throws MojoExecutionException{
-		String getDependencyTreeRequt = GovernanceSOAPMessageCreator.
-				createGetDependencyTreeRequest(absoluteResourcePath, type);
-		
-		String response = RegistrySOAPClient.sendMessage(relationServiceEndPointRef, getDependencyTreeRequt);
-		
-		Document responseMessage = XmlParser.parseXmlString(RegistrySOAPClient.stripMessage(response));
-		NodeList nodes = responseMessage.getElementsByTagName(GREG_DEP_TREE_ELEMENT_NAME);
+	public void removeExistingAssociations(String absoluteResourcePath) throws MojoExecutionException{
+		NodeList nodes = getDependencies(absoluteResourcePath, GREG_ASSOCIATION_TYPE_DEPENDS);
 
 		if (logger.isDebugEnabled()){
 			logger.debug("Removing " + nodes.getLength() + " dependencies from " + absoluteResourcePath);
@@ -49,8 +44,27 @@ public class GRegDependencyHandler {
 			Node currentNode = nodes.item(i);
 			String dependencyReourcePath = currentNode.getTextContent();
 			removeAssociation(absoluteResourcePath, dependencyReourcePath, GREG_ASSOCIATION_TYPE_DEPENDS);
+			removeAssociation(dependencyReourcePath,absoluteResourcePath, GREG_ASSOCIATION_TYPE_USEDBY);
 		}
 	}
+	
+	public NodeList getDependencies(String absoluteResourcePath, String type) throws MojoExecutionException {
+		
+	    String getDependencyTreeRequt = GovernanceSOAPMessageCreator.createGetDependencyTreeRequest(absoluteResourcePath, type);
+		
+		String response = RegistrySOAPClient.sendMessage(relationServiceEndPointRef, getDependencyTreeRequt);
+		Document responseMessage = XmlParser.parseXmlString(RegistrySOAPClient.stripMessage(response));
+		Node returnElment = responseMessage.getElementsByTagName("ns:return").item(0);
+		
+		NamedNodeMap attributes = returnElment.getAttributes();
+		Node xsiType = attributes.getNamedItem("xsi:type");
+		
+		String returnValueNamespace = xsiType.getNodeValue().split(":")[0];
+		returnValueNamespace = returnValueNamespace.concat(":" + GREG_DEP_TREE_ELEMENT_NAME);
+
+		NodeList nodes = responseMessage.getElementsByTagName(returnValueNamespace);
+	    return nodes;
+    }
 	
 	public int getAddedAssocationCount(){
 		return addedAssocationCount;
