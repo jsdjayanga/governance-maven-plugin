@@ -18,6 +18,8 @@ package governance.plugin;
 
 
 import governance.plugin.rxt.ModuleCreator;
+import governance.plugin.util.DirectoryScanner;
+import governance.plugin.util.POMFileCache;
 import governance.plugin.webapp.WebApplicationCreator;
 import governance.plugin.webapp.WebXMLParser;
 import org.apache.maven.model.Model;
@@ -77,10 +79,8 @@ public class WebAppGovernanceMojo extends AbstractMojo
     private GRegDependencyHandler gregDependencyHandler;
     private Configurations configurations;
 
-    private Map<String, File> pomMap;
-
     public WebAppGovernanceMojo() throws MojoExecutionException{
-        pomMap = new HashMap<String, File>();
+
     }
 
     public void execute() throws MojoExecutionException
@@ -101,11 +101,11 @@ public class WebAppGovernanceMojo extends AbstractMojo
                 + "\npom.xml Files Processed..........." + pomFileCount
                 + "\nweb.xml Files Processed..........." + webXMLFileCount
                 + "\njava Files Processed.............." + javaFileCount
-                + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
+                + "\nModules .........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nWebApplications....[Created:" + webApplicationCreator.getCreatedAssetCount()
+                + "\nWebApplications..[Created:" + webApplicationCreator.getCreatedAssetCount()
                 + ", Existing:" + webApplicationCreator.getCreatedAssetCount() + "]"
-                + "\nAssocations.....[Added:" + gregDependencyHandler.getAddedAssocationCount()
+                + "\nAssocations......[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
 
     }
@@ -133,9 +133,9 @@ public class WebAppGovernanceMojo extends AbstractMojo
             if (children == null){
                 getLog().debug("Empty directory skipping.. :" + path);
             }else{
-                File pomFile = findPOMFileInCurrentDirectory(children);
+                File pomFile = DirectoryScanner.findFile(root, "pom.xml");
                 if (pomFile != null){
-                    pomMap.put(pomFile.getParent(), pomFile);
+                    POMFileCache.put(pomFile.getParent(), pomFile);
                 }
 
                 for (File child : children){
@@ -149,31 +149,6 @@ public class WebAppGovernanceMojo extends AbstractMojo
         getLog().debug("Finished scanning directory :" + path);
     }
 
-    private File findPOMFileInCurrentDirectory(File[] files){
-        File file = null;
-
-        for (int index = 0; index < files.length; index++){
-            file = files[index];
-            if (file != null && file.isFile()){
-                if (file.getName().equals("pom.xml")){
-                    return file;
-                }
-            }
-        }
-        return null;
-    }
-
-    private File findNearestPOMFile(File file){
-        while (true){
-
-            File pomFile = pomMap.get(file.getParent());
-            if (pomFile != null){
-                return pomFile;
-            }
-            file = file.getParentFile();
-        }
-    }
-
     public void process(File file) throws MojoExecutionException{
         getLog().debug("Processing " + file.getAbsoluteFile());
 
@@ -183,7 +158,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
             List<Object> serviceInfoList = WebXMLParser.parse(file);
 
             for (int i = 0; i < serviceInfoList.size(); i++){
-                webApplicationCreator.create((Map<String, String>)serviceInfoList.get(i));
+                webApplicationCreator.create((Map<String, String>) serviceInfoList.get(i));
                 linkWebappWithModule((Map<String, String>)serviceInfoList.get(i), file);
             }
 
@@ -192,7 +167,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
 
     public void linkWebappWithModule(Map<String, String> parameters, File file) throws MojoExecutionException {
 
-        File currentPOM = findNearestPOMFile(file);
+        File currentPOM = POMFileCache.getNearestPOM(file);
         if (currentPOM == null){
             throw new MojoExecutionException("Cannot find a POM related to this module. [file=" + file.getAbsolutePath() + "]");
         }

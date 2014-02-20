@@ -1,6 +1,6 @@
 package governance.plugin.service;
 
-import governance.plugin.util.PackageToNamespace;
+import governance.plugin.util.PathNameResolver;
 import org.eclipse.jdt.core.dom.*;
 
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class ServiceAnnotationVisitor extends ASTVisitor {
                     packageName = pd.getName().getFullyQualifiedName();
                 }
             }
-            String namespace = PackageToNamespace.PackageToNamespace(packageName.trim());
+            String namespace = PathNameResolver.PackageToNamespace(packageName.trim());
 
             //String[] serviceInfo = {serviceName, namespace, "1.0.0", "JAX-WS", ""};
             Map<String, String> serviceInfo = new HashMap<String, String>();
@@ -78,7 +78,7 @@ public class ServiceAnnotationVisitor extends ASTVisitor {
                 }
             }
 
-            String namespace = PackageToNamespace.PackageToNamespace(packageName.trim());
+            String namespace = PathNameResolver.PackageToNamespace(packageName.trim());
 
             //String[] serviceInfo = {serviceName, "1.0.0", "JAX-RS", ""};
             Map<String, String> serviceInfo = new HashMap<String, String>();
