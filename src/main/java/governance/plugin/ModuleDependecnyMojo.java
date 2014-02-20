@@ -20,11 +20,8 @@ import governance.plugin.rxt.ArtifactCreator;
 import governance.plugin.rxt.ModuleCreator;
 
 import java.io.File;
-
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.model.Dependency;
@@ -63,14 +60,11 @@ public class ModuleDependecnyMojo extends AbstractMojo
     private String gregPassword;
     
     @Parameter( property = "gregHome")
-	private String gregHome;
+    private String gregHome;
     
     @Parameter( property = "buildProfile")
    	private String buildProfile;
     
-	private int pomFileCount = 0;
-	private int directoryCount = 0;
-
 	private ModuleCreator moduleCreator; 
 	private ArtifactCreator artifactCreator;
 	private GRegDependencyHandler gregDependencyHandler;
@@ -88,24 +82,23 @@ public class ModuleDependecnyMojo extends AbstractMojo
    	 
     	configure();
     	
-    	getLog().info("Starting to scan with root:" +  configurations.getRepoLocation());
-    	scanPomTree(configurations.getRepoLocation());
+    	getLog().info("Creating modules....");
+    	createModules(configurations.getRepoLocation());
+    	
+    	getLog().info("Creating artifacts and adding associations....");
     	createDependencies();
     		
         getLog().info("SUMMARY:" 
-        			  + "\nDirectories Scanned..............." + directoryCount 
-                      + "\npom.xml Files Processed..........." + pomFileCount
+                      + "\npom.xml Files Processed..........." + mavenProjects.size()
                       + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount() 
                       + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
                       + "\nArtifacts ......[Created:" + artifactCreator.getCreatedAssetCount() 
                       + ", Existing:" + artifactCreator.getExistingAssetCount() + "]"
                       + "\nAssocations.....[Added:" + gregDependencyHandler.getAddedAssocationCount()
-                      + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
-                      
+                      + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");           
     }
     
     private void configure(){
-    	
     	System.setProperty("javax.net.ssl.trustStore", configurations.getGregHome() +  File.separator + "repository" + File.separator + 
     	                   "resources" + File.separator + "security"+ File.separator + "client-truststore.jks");
     	
@@ -119,6 +112,31 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
     }
     
+    private void createModules(String rootPomPath) throws MojoExecutionException{
+    	String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
+    	MavenProject project = createMavenProject(new File(filePath));
+    	if (project == null){
+    		throw new MojoExecutionException("Cannot find pom.xml @ " + rootPomPath);
+    	}
+    	
+    	moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), rootPomPath});
+    	mavenProjects.add(project);
+    	
+    	// Go through module section of the pom and create modules for them as well
+    	List<String> modules = project.getModules();
+    	List<Profile> profiles = project.getModel().getProfiles();
+    	for (Profile profile : profiles){
+    		if (profile.getId().equals(configurations.getBuildProfileId())){
+    			modules.addAll(profile.getModules());
+    			getLog().info("Adding modules of maven profile '"  + configurations.getBuildProfileId() + "'");
+    		}
+    	}
+    	
+    	for (String module : modules){
+    		createModules(rootPomPath.concat(File.separatorChar + module.replace('/', File.separatorChar)));
+    	}
+    }
+    
     private void createDependencies() throws MojoExecutionException{
     	for (MavenProject project: mavenProjects){
     		String moduleAbsolutPath = moduleCreator.
@@ -129,66 +147,33 @@ public class ModuleDependecnyMojo extends AbstractMojo
         	List<Dependency> dependencies = project.getDependencies();	
         	for (Dependency dependency : dependencies){
         		String dependencyReosurcePath = getDependencyPath(dependency);
-        		
         		// Adding the dependency
         		gregDependencyHandler.addAssociation(moduleAbsolutPath, dependencyReosurcePath, 
         		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
-        		
         		// Adding the invert association(i.e.dependency is usedBy source)
         		gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath, 
         		                                     GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
         	}
     	}
     }
-    
-    private void scanPomTree(String rootPomPath) throws MojoExecutionException{
-    	String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
-    	MavenProject project = createModule(new File(filePath));
-    	mavenProjects.add(project);
-    	if (project == null){
-    		throw new MojoExecutionException("Cannot find pom.xml @ " + rootPomPath);
-    	}
-    	
-    	List<String> modules = project.getModules();
-    	
-    	List<Profile> profiles = project.getModel().getProfiles();
-    	for (Profile profile : profiles){
-    		if (profile.getId().equals(configurations.getBuildProfileId())){
-    			modules.addAll(profile.getModules());
-    			getLog().info("Adding modules of maven profile with ID  '"  + configurations.getBuildProfileId() + "'");
-    		}
-    	}
-    	
-    	for (String module : modules){
-    		scanPomTree(rootPomPath.concat(File.separatorChar + module.replace('/', File.separatorChar)));
-    	}
-    }
-    
-    private MavenProject createMavenProject(File pomFile) throws MojoExecutionException{
-    	Model model = XmlParser.parsePom(pomFile);
-		if (model == null){
-			throw new MojoExecutionException("Error while processing  " + pomFile.getAbsoluteFile());
-		}
-		return new MavenProject(model);
-    }
-   
-        
-    public MavenProject createModule(File file) throws MojoExecutionException{
+  
+    public MavenProject createMavenProject(File file) throws MojoExecutionException{
     	MavenProject project = null;
-    	if (file.isFile() &&  file.getName().equals("pom.xml")){
-    		pomFileCount++;
+    	if (file.exists()){
     		getLog().debug("Processing " + file.getAbsoluteFile());
 
-    		project = createMavenProject(file);
+    		Model model = XmlParser.parsePom(file);
+    		if (model == null){
+    			throw new MojoExecutionException("Error while processing  " + file.getAbsoluteFile());
+    		}
+    		project = new MavenProject(model);
     		
     		EffectivePom effectivePom = new EffectivePom(file);
         	project = effectivePom.fillChildProject(project);
-        	
-        	moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), file.getAbsolutePath()});
     	}
     	return project;
     }  
-    
+
     /**
      * Check if there's 'Module' asset representing the given dependency, if there's is no 'Module' asset
      * create an 'Artifact' asset to represent the dependency

@@ -62,7 +62,7 @@ public class EffectivePom {
     	    NodeList projectNodes = pomDoc.getElementsByTagName("project");
     	    Model model = null;
     	    if (projectNodes.getLength() > 1){
-    	    	Node projectNode = projectNodes.item(0);
+    	    	Node projectNode = projectNodes.item(0);//Only interested about the first project node
     	    	DOMSource source = new DOMSource(projectNode);
     	    	StreamResult result = new StreamResult(new StringWriter());
     	    	
@@ -84,7 +84,6 @@ public class EffectivePom {
     }
 
 	private void runEffectivePomCommand() throws MojoExecutionException {
-		
 		Process mavenCommandProcess;
         try {
         	System.out.println("Running " + MAVEN_COMMAND + " on " + pomFileLocation + ". This might take few minutes....");
@@ -124,8 +123,6 @@ public class EffectivePom {
 	
 	public MavenProject fillChildProject(MavenProject childProject) throws MojoExecutionException{
 		childProject.setVersion(effectiveProject.getVersion());
-		//TODO : Check for properties and fetch
-		//Filling unresolved versions
 		List<Dependency> dependencies = childProject.getDependencies();
 		for (Dependency dependency: dependencies){
 			if (dependency.getVersion() == null || dependency.getVersion().isEmpty() || 
@@ -144,7 +141,6 @@ public class EffectivePom {
     			   throw new MojoExecutionException("Could not resolve the version of " + dependency.getGroupId() + ":" + dependency.getArtifactId());
     		    }
     		    dependency.setVersion(resolvedVersion);
-    		    System.out.println("Resolved Version :"+ dependency.getGroupId() + ":" + dependency.getArtifactId() + " => " + resolvedVersion);
 			}
 		}
 		return childProject;
