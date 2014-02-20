@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<artifactType type="application/vnd.wso2-webapp+xml" shortName="webapp" singularLabel="Webapp" pluralLabel="Webapps" hasNamespace="false" iconSet="27">
+    <storagePath>/trunk/webapps/@{namespace}/@{name}</storagePath>
+    <nameAttribute>overview_name</nameAttribute>
+    <namespaceAttribute>overview_namespace</namespaceAttribute>
+    <lifecycle>WebappLifeCycle</lifecycle>
+    <ui>
+        <list>
+            <column name="Webapp Name">
+                <data type="path" value="overview_name" href="@{storagePath}"/>
+            </column>
+            <column name="Webapp Version">
+                <data type="path" value="overview_version" href="@{storagePath}"/>
+            </column>
+   <column name="Description">
+                <data type="text" value="overview_description"/>
+            </column>
+        </list>
+    </ui>
+    <content>
+        <table name="Overview">
+            <field type="text" required="true">
+                <name>Provider</name>
+            </field>
+            <field type="text" required="true" readonly="true">
+                <name label="Name">Name</name>
+            </field>
+            <field type="text" required="true" readonly="true">
+                <name label="Namespace">Namespace</name>
+            </field>
+            <field type="text" readonly="true">
+                <name label="DisplayName">DisplayName</name>
+            </field>
+            <field type="text" readonly="true">
+                <name label="ServiceClass">ServiceClass</name>
+            </field>
+            <field type="text" readonly="true">
+                <name label="Version">Version</name>
+            </field>
+            <field type="text-area">
+                <name label="Description">Description</name>
+            </field>
+        </table>
+	<table name="Images">
+            <field type="text" required="true">
+                <name>Thumbnail</name>
+            </field>
+            <field type="text" required="true">
+                <name>Banner</name>
+            </field>
+        </table>
+    </content>
+</artifactType>
