@@ -118,7 +118,7 @@
             "name": "lifeCycle",
             "table": "*",
             "label": "Life Cycle",
-            "value": "SampleLifeCycle2"
+            "value": "ServiceLifeCycle"
         } ,
         {
             "name": "banner",
