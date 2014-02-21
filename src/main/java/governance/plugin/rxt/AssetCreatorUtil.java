@@ -1,16 +1,8 @@
 package governance.plugin.rxt;
 
 import governance.plugin.GovernanceSOAPMessageCreator;
-import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.RegistrySOAPClient;
 import governance.plugin.XmlParser;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.w3c.dom.Document;

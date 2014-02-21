@@ -1,6 +1,5 @@
 package governance.plugin.rxt;
 
-import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.RegistrySOAPClient;
 
 import org.apache.maven.plugin.MojoExecutionException;

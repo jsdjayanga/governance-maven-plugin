@@ -57,9 +57,9 @@ public class ModuleCreator extends AbstractAssetCreator{
 		
 		if (logger.isInfoEnabled()){
     		if (isModuleExisting){
-    			logger.info("Request sent to create module: "+ artifactID + "/" +  version);
+    			logger.info("Request sent to create 'Module': "+ artifactID + ":" +  version);
     		}else{
-    			logger.debug("Module already available: " + artifactID + "/" +  version);
+    			logger.debug("Module already available: " + artifactID + ":" +  version);
     		}
 		}
 		

@@ -127,8 +127,8 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	List<Profile> profiles = project.getModel().getProfiles();
     	for (Profile profile : profiles){
     		if (profile.getId().equals(configurations.getBuildProfileId())){
-    			modules.addAll(profile.getModules());
     			getLog().info("Adding modules of maven profile '"  + configurations.getBuildProfileId() + "'");
+    			modules.addAll(profile.getModules());
     		}
     	}
     	

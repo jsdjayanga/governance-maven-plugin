@@ -1,6 +1,5 @@
 package governance.plugin.rxt;
 
-import governance.plugin.ModuleDependecnyMojo;
 import governance.plugin.GovernanceSOAPMessageCreator;
 import governance.plugin.rxt.AbstractAssetCreator;
 
@@ -52,9 +51,9 @@ public class ArtifactCreator extends AbstractAssetCreator{
 		boolean isDependencyCreated = super.createAsset(artifactPath, createArtifactRequst);
 		
 		if (isDependencyCreated){
-			logger.debug("Request sent to create 'Artifact': "+ groupId + "/" +  artifactId +  "/" + version);
+			logger.debug("Request sent to create 'Artifact': "+ groupId + ":" +  artifactId +  ":" + version);
 		}else{
-			logger.debug("'Artifact' already available: " + groupId + "/" +  artifactId +  "/" + version);
+			logger.debug("'Artifact' already available: " + groupId + ":" +  artifactId +  ":" + version);
 		}
 		
 		return isDependencyCreated;
