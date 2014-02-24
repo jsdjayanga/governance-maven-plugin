@@ -23,6 +23,7 @@ import governance.plugin.service.ServicesXMLParser;
 import governance.plugin.util.DirectoryScanner;
 import governance.plugin.util.POMFileCache;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -30,8 +31,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +99,8 @@ public class ServiceGovernanceMojo extends AbstractMojo
         configure();
 
         getLog().info("Starting to scan with root:" +  configurations.getRepoLocation());
-        scanDirectory(configurations.getRepoLocation());
+        //scanDirectory(configurations.getRepoLocation());
+        scanPomTree(configurations.getRepoLocation());
 
         getLog().info("SUMMARY:"
                 + "\nDirectories Scanned..............." + directoryCount
@@ -125,21 +130,58 @@ public class ServiceGovernanceMojo extends AbstractMojo
         RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
     }
 
-    private void scanDirectory(String path) throws MojoExecutionException{
-        File root = new File(path);
-        if (root.isDirectory()){
-            directoryCount++;
-            File[] children = root.listFiles();
-            if (children == null){
-                getLog().debug("Empty directory skipping.. :" + path);
+    private void scanDirectory(File file) throws MojoExecutionException{
+        if (file != null){
+            if (file.isDirectory()){
+                directoryCount++;
+
+                File[] children = file.listFiles();
+                if (children == null){
+                    getLog().debug("Empty directory skipping.. :" + file.getAbsolutePath());
+                }else{
+                    for (File child : children){
+                        scanDirectory(child);
+                    }
+                }
             }else{
-                File pomFile = DirectoryScanner.findFile(root, "pom.xml");
-                if (pomFile != null){
-                    POMFileCache.put(pomFile.getParent(), pomFile);
+                process(file);
+            }
+        }
+    }
+
+    private void scanPomTree(String path) throws MojoExecutionException{
+        File rootFile = new File(path);
+        if (rootFile != null){
+            File pomFile = DirectoryScanner.findFile(rootFile, "pom.xml");
+            if (pomFile != null){
+                POMFileCache.put(pomFile.getParent(), pomFile);
+
+                Model model = XmlParser.parsePom(pomFile);
+                if (model == null){
+                    throw new MojoExecutionException("Error while processing  " + pomFile.getAbsoluteFile());
                 }
 
-                for (File child : children){
-                    scanDirectory(child.getAbsolutePath());
+                MavenProject project = new MavenProject(model);
+                if (project == null){
+                    throw new MojoExecutionException("Cannot create a project from given POM file " + pomFile.getName());
+                }
+
+                if (!project.getPackaging().equalsIgnoreCase("pom")){
+                    scanDirectory(rootFile);
+                }
+
+                List<String> modules = project.getModules();
+
+                List<Profile> profiles = project.getModel().getProfiles();
+                for (Profile profile : profiles){
+                    if (profile.getId().equals(configurations.getBuildProfileId())){
+                        modules.addAll(profile.getModules());
+                        getLog().info("Adding modules of maven default with ID  '"  + configurations.getBuildProfileId() + "'");
+                    }
+                }
+
+                for (String module : modules){
+                    scanPomTree(path.concat(File.separatorChar + module.replace('/', File.separatorChar)));
                 }
             }
         }
@@ -155,8 +197,19 @@ public class ServiceGovernanceMojo extends AbstractMojo
         if (file.getName().equals("services.xml")){
             servicesXMLCount++;
 
-            List<Object> serviceInfoList = ServicesXMLParser.parse(file);
-            //Object[] serviceInfoArray = serviceInfoList.toArray(new Object[serviceInfoList.size()]);
+            List<Object> serviceInfoList = null;
+            try {
+                serviceInfoList = ServicesXMLParser.parse(file);
+            } catch (SAXException e) {
+                e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage());
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage());
+            }
 
             for (int i = 0; i < serviceInfoList.size(); i++){
                 serviceCreator.create((Map<String, String>)serviceInfoList.get(i));

@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by jayanga on 2/9/14.
  */
 public class ServicesXMLParser {
-    public static List<Object> parse(File file){
+    public static List<Object> parse(File file) throws SAXException, IOException, ParserConfigurationException {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -59,12 +59,15 @@ public class ServicesXMLParser {
                     }
                 }
             } catch (SAXException e) {
-                e.printStackTrace();
+                System.out.println("Failed to parse the file. SAXException (" + file.getPath() + ")");
+                throw e;
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Failed to parse the file. IOException (" + file.getPath() + ")");
+                throw e;
             }
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            System.out.println("Failed to parse the file. ParserConfigurationException (" + file.getPath() + ")");
+            throw e;
         }
 
         return serviceInfoList;
