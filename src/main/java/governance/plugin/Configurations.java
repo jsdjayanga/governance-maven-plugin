@@ -57,7 +57,7 @@ public class Configurations{
     	if (profile != null)
     		properties = profile.getProperties();
     	
-    	gregServiceUrl = readParameter(gregServiceUrl, SETTINGS_ELEMENT_GREG_URL, "gregServiceUrl", "https://localhost:9443/services/");
+    	gregServiceUrl = readParameter(gregServiceUrl, SETTINGS_ELEMENT_GREG_URL, "gregServiceUrl", "https://localhost:9443/admin/services/");
     	gregUserName = readParameter(gregUserName, SETTINGS_ELEMENT_GREG_USER_NAME, "gregUsername", "admin");
     	gregPassword = readParameter(gregPassword, SETTINGS_ELEMENT_GREG_PASSWORD, "gregPassword", "admin");
     	repositoryLocation = readParameter(repositoryLocation, SETTINGS_ELEMENT_REPO_LOCATION, "location", project.getBasedir().getPath());

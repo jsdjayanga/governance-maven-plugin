@@ -32,7 +32,7 @@ public class EffectivePom {
 	private static final String MAVEN_COMMAND = "mvn help:effective-pom -Doutput=" + EFFECTIVE_POM_FILE;
 	private static final String MAVEN_PROPERTY_PLACE_HOLDER = "$";
 	private static final String MAVEN_PROJECT_GROUPID_PROPERTY = "${project.groupId}";
-	
+		
 	private static Map<String, String> resolvedVersions = new HashMap<String, String>();
 	
 	public EffectivePom(File pomFile) throws MojoExecutionException{
