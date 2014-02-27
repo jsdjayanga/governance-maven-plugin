@@ -106,7 +106,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
                 + "\nModules .........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
                 + "\nWebApplications..[Created:" + webApplicationCreator.getCreatedAssetCount()
-                + ", Existing:" + webApplicationCreator.getCreatedAssetCount() + "]"
+                + ", Existing:" + webApplicationCreator.getExistingAssetCount() + "]"
                 + "\nAssocations......[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
 

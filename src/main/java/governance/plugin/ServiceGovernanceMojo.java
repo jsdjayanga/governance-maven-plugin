@@ -110,7 +110,7 @@ public class ServiceGovernanceMojo extends AbstractMojo
                 + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
                 + "\nServices........[Created:" + serviceCreator.getCreatedAssetCount()
-                + ", Existing:" + serviceCreator.getCreatedAssetCount() + "]"
+                + ", Existing:" + serviceCreator.getExistingAssetCount() + "]"
                 + "\nAssocations.....[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
     }
