@@ -20,7 +20,7 @@ import java.util.Map;
  * Created by jayanga on 2/11/14.
  */
 public class WebXMLParser {
-    public static List<Object> parse(File file){
+    public static List<Object> parse(File file) throws SAXException, IOException, ParserConfigurationException{
         List<Object> serviceInfoList = new LinkedList<Object>();
 
         Document document = parseFile(file);
@@ -69,31 +69,17 @@ public class WebXMLParser {
         return serviceInfoList;
     }
 
-    private static Document parseFile(File file){
+    private static Document parseFile(File file) throws SAXException, IOException, ParserConfigurationException{
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = null;
         Document doc = null;
 
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
+        dBuilder = dbFactory.newDocumentBuilder();
 
-            try {
-                doc = dBuilder.parse(file);
-                doc.getDocumentElement().normalize();
+        doc = dBuilder.parse(file);
+        doc.getDocumentElement().normalize();
 
-                return doc;
-
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return doc;
     }
 
     private static String getServletName(NodeList nodeList, String name){

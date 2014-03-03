@@ -31,8 +31,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,7 +197,19 @@ public class WebAppGovernanceMojo extends AbstractMojo
         if(file.getName().equals("web.xml")){
             webXMLFileCount++;
 
-            List<Object> serviceInfoList = WebXMLParser.parse(file);
+            List<Object> serviceInfoList = null;
+            try {
+                serviceInfoList = WebXMLParser.parse(file);
+            } catch (SAXException e) {
+                e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage());
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage());
+            }
 
             for (int i = 0; i < serviceInfoList.size(); i++){
                 webApplicationCreator.create((Map<String, String>) serviceInfoList.get(i));
