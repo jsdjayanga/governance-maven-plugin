@@ -1,5 +1,7 @@
 package governance.plugin.util;
 
+import org.apache.maven.plugin.MojoExecutionException;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +16,17 @@ public class POMFileCache {
         pomMap.put(path, file);
     }
 
-    public static File getNearestPOM(File file){
-        while (true){
+    public static File getNearestPOM(File file) throws MojoExecutionException {
 
+        if (file != null){
             File pomFile = pomMap.get(file.getParent());
             if (pomFile != null){
                 return pomFile;
             }
-            file = file.getParentFile();
+
+            return getNearestPOM(file.getParentFile());
         }
+
+        throw new MojoExecutionException("Cannot find a POM related to this module. [file=" + file.getAbsolutePath() + "]");
     }
 }
