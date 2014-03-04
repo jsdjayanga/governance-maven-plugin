@@ -24,7 +24,7 @@ public class MavenProjectScanner {
         return projectList;
     }
 
-    public static void scanPOMTree(String rootPomPath, String buildProfileID) throws MojoExecutionException {
+    private static void scanPOMTree(String rootPomPath, String buildProfileID) throws MojoExecutionException {
         String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
         MavenProject project = createMavenProject(new File(filePath));
         projectList.add(project);
