@@ -16,10 +16,11 @@ package governance.plugin;
  * limitations under the License.
  */
 
-import governance.plugin.rxt.ModuleCreator;
-import governance.plugin.service.ServiceCreator;
-import governance.plugin.service.ServiceJavaFileParser;
-import governance.plugin.service.ServicesXMLParser;
+import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.rxt.module.ModuleCreator;
+import governance.plugin.rxt.service.ServiceCreator;
+import governance.plugin.rxt.service.ServiceJavaFileParser;
+import governance.plugin.rxt.service.ServicesXMLParser;
 import governance.plugin.util.DirectoryScanner;
 import governance.plugin.util.MavenProjectHelper;
 import governance.plugin.util.POMFileCache;
@@ -37,7 +38,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

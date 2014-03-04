@@ -1,4 +1,4 @@
-package governance.plugin;
+package governance.plugin.common;
 
 /**
  * Create SOAP messages/request required to create "Module"  and 
@@ -119,6 +119,73 @@ public class GovernanceSOAPMessageCreator {
         soapRequest.append("</soapenv:Envelope>");
         return soapRequest.toString();
 	}
+
+    public static String  createAddServiceRequest(String name, String namespace, String version, String type, String description){
+        StringBuffer soapRequest = new StringBuffer();
+        soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
+        soapRequest.append("xmlns:ser='http://services.add.service.governance.carbon.wso2.org'>");
+        soapRequest.append("<soapenv:Header/>");
+        soapRequest.append("<soapenv:Body>");
+        soapRequest.append("<ser:addService>");
+        soapRequest.append("<ser:info><![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview><name>");
+        soapRequest.append(name);
+        soapRequest.append("</name>");
+        soapRequest.append("<namespace>");
+        soapRequest.append(namespace);
+        soapRequest.append("</namespace>");
+        soapRequest.append("<version>");
+        soapRequest.append(version);
+        soapRequest.append("</version>");
+        soapRequest.append("<types>");
+        soapRequest.append(type);
+        soapRequest.append("</types>");
+        soapRequest.append("<description>");
+        soapRequest.append(description);
+        soapRequest.append("</description>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getMetaDataTags());
+        soapRequest.append("</overview>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getImageTags());
+        soapRequest.append("</metadata>]]></ser:info>");
+        soapRequest.append("</ser:addService>");
+        soapRequest.append("</soapenv:Body>");
+        soapRequest.append("</soapenv:Envelope>");
+        return soapRequest.toString();
+    }
+
+    public static String  createAddWebAppRequest(String name, String namespace, String serviceclass, String displayname, String version, String description){
+        StringBuffer soapRequest = new StringBuffer();
+        soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
+        soapRequest.append("xmlns:ser='http://services.add.webapp.governance.carbon.wso2.org'>");
+        soapRequest.append("<soapenv:Header/>");
+        soapRequest.append("<soapenv:Body>");
+        soapRequest.append("<ser:addWebapp>");
+        soapRequest.append("<ser:info><![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview><name>");
+        soapRequest.append(name);
+        soapRequest.append("</name>");
+        soapRequest.append("<namespace>");
+        soapRequest.append(namespace);
+        soapRequest.append("</namespace>");
+        soapRequest.append("<serviceclass>");
+        soapRequest.append(serviceclass);
+        soapRequest.append("</serviceclass>");
+        soapRequest.append("<displayname>");
+        soapRequest.append(displayname);
+        soapRequest.append("</displayname>");
+        soapRequest.append("<version>");
+        soapRequest.append(version);
+        soapRequest.append("</version>");
+        soapRequest.append("<description>");
+        soapRequest.append(description);
+        soapRequest.append("</description>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getMetaDataTags());
+        soapRequest.append("</overview>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getImageTags());
+        soapRequest.append("</metadata>]]></ser:info>");
+        soapRequest.append("</ser:addWebapp>");
+        soapRequest.append("</soapenv:Body>");
+        soapRequest.append("</soapenv:Envelope>");
+        return soapRequest.toString();
+    }
 	
 	public static String  getCurrentTime(){
 		long unformatedTime = System.currentTimeMillis();

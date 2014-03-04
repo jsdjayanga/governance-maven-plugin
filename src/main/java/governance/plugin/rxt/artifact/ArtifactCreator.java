@@ -1,6 +1,6 @@
-package governance.plugin.rxt;
+package governance.plugin.rxt.artifact;
 
-import governance.plugin.GovernanceSOAPMessageCreator;
+import governance.plugin.common.GovernanceSOAPMessageCreator;
 import governance.plugin.rxt.AbstractAssetCreator;
 
 

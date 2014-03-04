@@ -1,4 +1,4 @@
-package governance.plugin.service;
+package governance.plugin.rxt.service;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -6,7 +6,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

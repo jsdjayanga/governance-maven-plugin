@@ -1,5 +1,7 @@
 package governance.plugin;
 
+import governance.plugin.common.GovernanceSOAPMessageCreator;
+import governance.plugin.common.RegistrySOAPClient;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.w3c.dom.Document;

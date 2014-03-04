@@ -1,13 +1,13 @@
-package governance.plugin.rxt;
+package governance.plugin.rxt.module;
 
-import governance.plugin.GovernanceSOAPMessageCreator;
-import governance.plugin.ModuleDependecnyMojo;
+import governance.plugin.common.GovernanceSOAPMessageCreator;
 
 
+import governance.plugin.rxt.AbstractAssetCreator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-public class ModuleCreator extends AbstractAssetCreator{
+public class ModuleCreator extends AbstractAssetCreator {
 
 	public static final String GREG_MODULE_RESOURCE_PATH = "/trunk/modules/";
 	public static  String DEFAULT_MODULE_TYPE = "Unknown";

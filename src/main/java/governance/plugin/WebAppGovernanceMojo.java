@@ -17,12 +17,13 @@ package governance.plugin;
  */
 
 
-import governance.plugin.rxt.ModuleCreator;
+import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.rxt.module.ModuleCreator;
 import governance.plugin.util.DirectoryScanner;
 import governance.plugin.util.MavenProjectHelper;
 import governance.plugin.util.POMFileCache;
-import governance.plugin.webapp.WebApplicationCreator;
-import governance.plugin.webapp.WebXMLParser;
+import governance.plugin.rxt.webapp.WebApplicationCreator;
+import governance.plugin.rxt.webapp.WebXMLParser;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
@@ -37,7 +38,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

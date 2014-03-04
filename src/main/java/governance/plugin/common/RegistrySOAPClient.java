@@ -1,7 +1,6 @@
-package governance.plugin;
+package governance.plugin.common;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -9,11 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.maven.plugin.MojoExecutionException;
-import org.w3c.dom.Document;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 

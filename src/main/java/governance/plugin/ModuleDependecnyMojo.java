@@ -16,8 +16,9 @@ package governance.plugin;
  * limitations under the License.
  */
 
-import governance.plugin.rxt.ArtifactCreator;
-import governance.plugin.rxt.ModuleCreator;
+import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.rxt.artifact.ArtifactCreator;
+import governance.plugin.rxt.module.ModuleCreator;
 
 import java.io.File;
 import java.util.HashSet;

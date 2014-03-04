@@ -1,4 +1,4 @@
-package governance.plugin.webapp;
+package governance.plugin.rxt.webapp;
 
 import governance.plugin.util.PathNameResolver;
 import org.w3c.dom.Document;

@@ -1,4 +1,4 @@
-package governance.plugin.service;
+package governance.plugin.rxt.service;
 
 import governance.plugin.util.PathNameResolver;
 import org.eclipse.jdt.core.dom.*;
