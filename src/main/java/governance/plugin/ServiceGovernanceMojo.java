@@ -26,7 +26,6 @@ import governance.plugin.rxt.service.ServiceJavaFileParser;
 import governance.plugin.rxt.service.ServicesXMLParser;
 import governance.plugin.util.Configurations;
 import governance.plugin.util.DirectoryScanner;
-import governance.plugin.util.MavenProjectHelper;
 import governance.plugin.util.POMFileCache;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
@@ -200,7 +199,9 @@ public class ServiceGovernanceMojo extends AbstractMojo
         getLog().debug("Processing " + file.getAbsoluteFile());
 
         File currentPOM = POMFileCache.getNearestPOM(file);
-        MavenProject project = MavenProjectHelper.createMavenProject(currentPOM);
+        Model model = XmlParser.parsePom(currentPOM);
+
+        MavenProject project = new MavenProject(model);
 
         if (project.getVersion().contains("$")){
             EffectivePom effectivePom = new EffectivePom(currentPOM);

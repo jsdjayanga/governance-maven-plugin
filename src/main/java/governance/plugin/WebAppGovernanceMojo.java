@@ -24,7 +24,6 @@ import governance.plugin.common.XmlParser;
 import governance.plugin.rxt.module.ModuleCreator;
 import governance.plugin.util.Configurations;
 import governance.plugin.util.DirectoryScanner;
-import governance.plugin.util.MavenProjectHelper;
 import governance.plugin.util.POMFileCache;
 import governance.plugin.rxt.webapp.WebApplicationCreator;
 import governance.plugin.rxt.webapp.WebXMLParser;
@@ -203,7 +202,9 @@ public class WebAppGovernanceMojo extends AbstractMojo
             webXMLFileCount++;
 
             File currentPOM = POMFileCache.getNearestPOM(file);
-            MavenProject project = MavenProjectHelper.createMavenProject(currentPOM);
+            Model model = XmlParser.parsePom(currentPOM);
+
+            MavenProject project = new MavenProject(model);
 
             if (project.getVersion().contains("$")){
                 EffectivePom effectivePom = new EffectivePom(currentPOM);
