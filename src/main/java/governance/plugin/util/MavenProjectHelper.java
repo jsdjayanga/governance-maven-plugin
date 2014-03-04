@@ -1,6 +1,6 @@
 package governance.plugin.util;
 
-import governance.plugin.XmlParser;
+import governance.plugin.common.XmlParser;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;

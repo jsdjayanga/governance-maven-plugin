@@ -1,4 +1,4 @@
-package governance.plugin;
+package governance.plugin.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +15,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 
+import governance.plugin.common.XmlParser;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecutionException;

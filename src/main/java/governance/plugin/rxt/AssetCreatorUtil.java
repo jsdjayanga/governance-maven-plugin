@@ -2,7 +2,7 @@ package governance.plugin.rxt;
 
 import governance.plugin.common.GovernanceSOAPMessageCreator;
 import governance.plugin.common.RegistrySOAPClient;
-import governance.plugin.XmlParser;
+import governance.plugin.common.XmlParser;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.w3c.dom.Document;

@@ -1,7 +1,8 @@
-package governance.plugin;
+package governance.plugin.rxt;
 
 import governance.plugin.common.GovernanceSOAPMessageCreator;
 import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.common.XmlParser;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.w3c.dom.Document;
@@ -25,7 +26,7 @@ public class GRegDependencyHandler {
 	private int addedAssocationCount = 0;
 	private int removedAssosicationCount = 0;
 	
-	GRegDependencyHandler(Log logger, String gregServiceUrl){
+	public GRegDependencyHandler(Log logger, String gregServiceUrl){
 		this.logger = logger;
 		this.relationServiceEndPointRef = gregServiceUrl + "RelationAdminService.RelationAdminServiceHttpsSoap11Endpoint";
 	}

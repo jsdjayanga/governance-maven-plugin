@@ -1,4 +1,4 @@
-package governance.plugin;
+package governance.plugin.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

@@ -14,7 +14,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @deprecated
- * Use governance.plugin.EffectivePom instead of this
+ * Use governance.plugin.util.EffectivePom instead of this
  */
 @Deprecated
 public class MavenDependencyVersionResolver {

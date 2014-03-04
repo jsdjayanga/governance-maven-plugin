@@ -17,8 +17,12 @@ package governance.plugin;
  */
 
 
+import governance.plugin.rxt.GRegDependencyHandler;
+import governance.plugin.util.EffectivePom;
 import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.common.XmlParser;
 import governance.plugin.rxt.module.ModuleCreator;
+import governance.plugin.util.Configurations;
 import governance.plugin.util.DirectoryScanner;
 import governance.plugin.util.MavenProjectHelper;
 import governance.plugin.util.POMFileCache;

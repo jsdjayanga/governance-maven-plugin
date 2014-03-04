@@ -16,7 +16,10 @@ package governance.plugin;
  * limitations under the License.
  */
 
+import governance.plugin.rxt.GRegDependencyHandler;
+import governance.plugin.util.EffectivePom;
 import governance.plugin.common.RegistrySOAPClient;
+import governance.plugin.common.XmlParser;
 import governance.plugin.rxt.artifact.ArtifactCreator;
 import governance.plugin.rxt.module.ModuleCreator;
 
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import governance.plugin.util.Configurations;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;

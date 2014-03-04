@@ -1,4 +1,4 @@
-package governance.plugin;
+package governance.plugin.util;
 
 import java.util.Map;
 import java.util.Properties;
