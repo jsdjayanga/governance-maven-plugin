@@ -88,13 +88,13 @@ public class ServiceHandler {
     public void process(MavenProject project, File file) throws MojoExecutionException{
         logger.debug("Processing " + file.getAbsoluteFile());
 
-        if (project.getVersion().contains("$")){
-            EffectivePom effectivePom = new EffectivePom(project.getFile());
-            project = effectivePom.fillChildProject(project);
-        }
-
         if (file.getName().equals("services.xml")){
             servicesXMLCount++;
+
+            if (project.getVersion().contains("$")){
+                EffectivePom effectivePom = new EffectivePom(project.getFile());
+                project = effectivePom.fillChildProject(project);
+            }
 
             List<Object> serviceInfoList = null;
             try {
@@ -117,6 +117,11 @@ public class ServiceHandler {
 
         }else if (file.getName().endsWith(".java")){
             javaFileCount++;
+
+            if (project.getVersion().contains("$")){
+                EffectivePom effectivePom = new EffectivePom(project.getFile());
+                project = effectivePom.fillChildProject(project);
+            }
 
             List<Object> serviceInfoList = null;
             try {
