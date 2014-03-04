@@ -88,7 +88,7 @@ public class MavenDependencyVersionResolver {
             
             mavenCommandProcess.destroy();
         } catch (Exception e) {
-        	throw new MojoExecutionException(e.getMessage());
+        	throw new MojoExecutionException(e.getMessage(), e);
         }
 	}
 	
@@ -104,7 +104,7 @@ public class MavenDependencyVersionResolver {
 	  		inputBuffer.close();
 	  		outputFile.delete();
         } catch (Exception e) {
-	        throw new MojoExecutionException(e.getMessage());
+	        throw new MojoExecutionException(e.getMessage(), e);
         }
 	}
 	

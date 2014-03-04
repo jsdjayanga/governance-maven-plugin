@@ -82,8 +82,7 @@ public class RegistrySOAPClient {
 			return response;
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
-			throw new MojoExecutionException(e.getMessage());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 	

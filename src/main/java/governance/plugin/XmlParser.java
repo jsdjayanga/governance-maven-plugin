@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
  */
 public class XmlParser {
 
-	public static Model parsePom(File file){
+	public static Model parsePom(File file) throws MojoExecutionException{
 		Model model = null;
 		FileReader reader = null;
 		MavenXpp3Reader mavenreader = new MavenXpp3Reader();
@@ -28,20 +28,20 @@ public class XmlParser {
 		     model = mavenreader.read(reader);
 		     model.setPomFile(file);
 		}catch(Exception ex){
-		     ex.printStackTrace();
+		     throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		
 		return model;
 	}
 	
-	public static Model parsePomFromXmlString(String xmlString){
+	public static Model parsePomFromXmlString(String xmlString) throws MojoExecutionException{
 		Model model = null;
 		MavenXpp3Reader mavenreader = new MavenXpp3Reader();
 
 		try {
 		     model = mavenreader.read(new StringReader(xmlString));
 		}catch(Exception ex){
-		     ex.printStackTrace();
+			 throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		
 		return model;

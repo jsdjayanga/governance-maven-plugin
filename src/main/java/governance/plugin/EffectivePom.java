@@ -79,7 +79,7 @@ public class EffectivePom {
     	    effectiveProject = new MavenProject(model);
     	    effectivePomXml.delete();
 		}catch(Exception e){
-			throw new MojoExecutionException(e.getMessage());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
     }
 
@@ -105,8 +105,7 @@ public class EffectivePom {
             mavenCommandProcess.destroy();
 	    	 
         } catch (Exception e) {
-        	 e.printStackTrace();
-	        throw new MojoExecutionException(e.getMessage());
+	        throw new MojoExecutionException(e.getMessage(), e);
         }	
     }
 	
