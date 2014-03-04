@@ -201,6 +201,11 @@ public class WebAppGovernanceMojo extends AbstractMojo
             File currentPOM = POMFileCache.getNearestPOM(file);
             MavenProject project = MavenProjectHelper.createMavenProject(currentPOM);
 
+            if (project.getVersion().contains("$")){
+                EffectivePom effectivePom = new EffectivePom(currentPOM);
+                project = effectivePom.fillChildProject(project);
+            }
+
             List<Object> serviceInfoList = null;
             try {
                 serviceInfoList = WebXMLParser.parse(file);

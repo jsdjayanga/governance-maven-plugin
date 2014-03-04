@@ -198,6 +198,11 @@ public class ServiceGovernanceMojo extends AbstractMojo
         File currentPOM = POMFileCache.getNearestPOM(file);
         MavenProject project = MavenProjectHelper.createMavenProject(currentPOM);
 
+        if (project.getVersion().contains("$")){
+            EffectivePom effectivePom = new EffectivePom(currentPOM);
+            project = effectivePom.fillChildProject(project);
+        }
+
         if (file.getName().equals("services.xml")){
             servicesXMLCount++;
 
