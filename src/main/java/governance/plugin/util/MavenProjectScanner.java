@@ -53,6 +53,7 @@ public class MavenProjectScanner {
                 throw new MojoExecutionException("Error while processing  " + file.getAbsoluteFile());
             }
             project = new MavenProject(model);
+            project.setFile(file);
             return project;
         }
 
