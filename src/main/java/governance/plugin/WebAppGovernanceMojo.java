@@ -17,14 +17,13 @@ package governance.plugin;
  */
 
 
+import governance.plugin.handler.ServiceHandler;
+import governance.plugin.handler.WebappHandler;
 import governance.plugin.rxt.GRegDependencyHandler;
-import governance.plugin.util.EffectivePom;
+import governance.plugin.util.*;
 import governance.plugin.common.RegistrySOAPClient;
 import governance.plugin.common.XmlParser;
 import governance.plugin.rxt.module.ModuleCreator;
-import governance.plugin.util.Configurations;
-import governance.plugin.util.DirectoryScanner;
-import governance.plugin.util.POMFileCache;
 import governance.plugin.rxt.webapp.WebApplicationCreator;
 import governance.plugin.rxt.webapp.WebXMLParser;
 import org.apache.maven.model.Model;
@@ -74,17 +73,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
 
     @Parameter( property = "buildProfile")
    	private String buildProfile;
-    //GReg resource paths
 
-
-    private int pomFileCount = 0;
-    private int directoryCount = 0;
-    private int javaFileCount = 0;
-    private int webXMLFileCount = 0;
-
-    private ModuleCreator moduleCreator;
-    private WebApplicationCreator webApplicationCreator;
-    private GRegDependencyHandler gregDependencyHandler;
     private Configurations configurations;
 
     public WebAppGovernanceMojo() throws MojoExecutionException{
@@ -95,28 +84,13 @@ public class WebAppGovernanceMojo extends AbstractMojo
     {
         configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome, buildProfile);
 
-        gregDependencyHandler = new GRegDependencyHandler(getLog(), configurations.getGergServiceUrl());
-        moduleCreator = new ModuleCreator(getLog(), configurations.getGergServiceUrl());
-        webApplicationCreator = new WebApplicationCreator(getLog(), configurations.getGergServiceUrl());
-
         configure();
 
-        getLog().info("Starting to scan with root:" +  configurations.getRepoLocation());
-        //scanDirectory(configurations.getRepoLocation());
-        scanPomTree(configurations.getRepoLocation());
+        getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
+        List<MavenProject> projectList = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        getLog().info("SUMMARY:"
-                + "\nDirectories Scanned..............." + directoryCount
-                + "\npom.xml Files Processed..........." + pomFileCount
-                + "\nweb.xml Files Processed..........." + webXMLFileCount
-                + "\njava Files Processed.............." + javaFileCount
-                + "\nModules .........[Created:" + moduleCreator.getCreatedAssetCount()
-                + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nWebApplications..[Created:" + webApplicationCreator.getCreatedAssetCount()
-                + ", Existing:" + webApplicationCreator.getExistingAssetCount() + "]"
-                + "\nAssocations......[Added:" + gregDependencyHandler.getAddedAssocationCount()
-                + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
-
+        WebappHandler handler = new WebappHandler(configurations, getLog());
+        handler.process(projectList);
     }
 
     private void configure(){
@@ -132,128 +106,5 @@ public class WebAppGovernanceMojo extends AbstractMojo
                 "wso2carbon.jks");
 
         RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
-    }
-
-    private void scanDirectory(File file) throws MojoExecutionException{
-        if (file != null){
-            if (file.isDirectory()){
-                directoryCount++;
-
-                File[] children = file.listFiles();
-                if (children == null){
-                    getLog().debug("Empty directory skipping.. :" + file.getAbsolutePath());
-                }else{
-                    for (File child : children){
-                        scanDirectory(child);
-                    }
-                }
-            }else{
-                process(file);
-            }
-        }
-    }
-
-    private void scanPomTree(String path) throws MojoExecutionException{
-        File rootFile = new File(path);
-        if (rootFile != null){
-            File pomFile = DirectoryScanner.findFile(rootFile, "pom.xml");
-            if (pomFile != null){
-                POMFileCache.put(pomFile.getParent(), pomFile);
-
-                Model model = XmlParser.parsePom(pomFile);
-                if (model == null){
-                    throw new MojoExecutionException("Error while processing  " + pomFile.getAbsoluteFile());
-                }
-
-                MavenProject project = new MavenProject(model);
-                if (project == null){
-                    throw new MojoExecutionException("Cannot create a project from given POM file " + pomFile.getName());
-                }
-
-                if (!project.getPackaging().equalsIgnoreCase("pom")){
-                    scanDirectory(rootFile);
-                }
-
-                List<String> modules = project.getModules();
-
-                List<Profile> profiles = project.getModel().getProfiles();
-                for (Profile profile : profiles){
-                    if (profile.getId().equals(configurations.getBuildProfileId())){
-                        modules.addAll(profile.getModules());
-                        getLog().info("Adding modules of maven default with ID  '"  + configurations.getBuildProfileId() + "'");
-                    }
-                }
-
-                for (String module : modules){
-                    scanPomTree(path.concat(File.separatorChar + module.replace('/', File.separatorChar)));
-                }
-            }
-        }
-        else{
-            process(new File(path));
-        }
-        getLog().debug("Finished scanning directory :" + path);
-    }
-
-    public void process(File file) throws MojoExecutionException{
-        getLog().debug("Processing " + file.getAbsoluteFile());
-
-        if(file.getName().equals("web.xml")){
-            webXMLFileCount++;
-
-            File currentPOM = POMFileCache.getNearestPOM(file);
-            Model model = XmlParser.parsePom(currentPOM);
-
-            MavenProject project = new MavenProject(model);
-
-            if (project.getVersion().contains("$")){
-                EffectivePom effectivePom = new EffectivePom(currentPOM);
-                project = effectivePom.fillChildProject(project);
-            }
-
-            List<Object> serviceInfoList = null;
-            try {
-                serviceInfoList = WebXMLParser.parse(file);
-            } catch (SAXException e) {
-                //e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage(), e);
-            } catch (IOException e) {
-                //e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage(), e);
-            } catch (ParserConfigurationException e) {
-                //e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage(), e);
-            }
-
-            for (int i = 0; i < serviceInfoList.size(); i++){
-                Map<String, String> serviceInfo = (Map<String, String>)serviceInfoList.get(i);
-                serviceInfo.put("version", project.getVersion());
-
-                webApplicationCreator.create(serviceInfo);
-                linkWebappWithModule(serviceInfo, project, file);
-            }
-
-        }
-    }
-
-    public void linkWebappWithModule(Map<String, String> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
-
-        String moduleAbsolutPath = moduleCreator.
-                getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
-
-        String dependencyReosurcePath = webApplicationCreator.
-                getAbsoluteResourcePath(new String[]{parameters.get("name"),parameters.get("namespace")});
-
-        if (!moduleCreator.isModuleExisting(project.getArtifactId(), project.getVersion())){
-            moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), currentPOM.getAbsolutePath()});
-        }
-
-        // Adding the dependency
-        gregDependencyHandler.addAssociation(moduleAbsolutPath, dependencyReosurcePath,
-                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
-
-        // Adding the invert association(i.e.dependency is usedBy source)
-        gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath,
-                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
     }
 }

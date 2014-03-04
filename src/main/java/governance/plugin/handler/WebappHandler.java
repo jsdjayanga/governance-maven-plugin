@@ -1,15 +1,11 @@
 package governance.plugin.handler;
 
-import governance.plugin.common.XmlParser;
 import governance.plugin.rxt.GRegDependencyHandler;
 import governance.plugin.rxt.module.ModuleCreator;
-import governance.plugin.rxt.service.ServiceCreator;
-import governance.plugin.rxt.service.ServiceJavaFileParser;
-import governance.plugin.rxt.service.ServicesXMLParser;
+import governance.plugin.rxt.webapp.WebApplicationCreator;
+import governance.plugin.rxt.webapp.WebXMLParser;
 import governance.plugin.util.Configurations;
 import governance.plugin.util.EffectivePom;
-import governance.plugin.util.POMFileCache;
-import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -24,28 +20,29 @@ import java.util.Map;
 /**
  * Created by jayanga on 3/4/14.
  */
-public class ServiceHandler {
+public class WebappHandler {
 
     private Configurations configurations;
     private Log logger;
 
     private int pomFileCount = 0;
     private int directoryCount = 0;
-    private int servicesXMLCount = 0;
     private int javaFileCount = 0;
+    private int webXMLFileCount = 0;
 
     private ModuleCreator moduleCreator;
-    private ServiceCreator serviceCreator;
+    private WebApplicationCreator webApplicationCreator;
     private GRegDependencyHandler gregDependencyHandler;
 
-    public ServiceHandler(Configurations configurations, Log logger) throws MojoExecutionException {
+    public WebappHandler(Configurations configurations, Log logger) throws MojoExecutionException {
         this.configurations = configurations;
         this.logger = logger;
 
         gregDependencyHandler = new GRegDependencyHandler(logger, configurations.getGergServiceUrl());
         moduleCreator = new ModuleCreator(logger, configurations.getGergServiceUrl());
-        serviceCreator = new ServiceCreator(logger, configurations.getGergServiceUrl());
+        webApplicationCreator = new WebApplicationCreator(logger, configurations.getGergServiceUrl());
     }
+
 
     public void process(List<MavenProject> projectTree) throws MojoExecutionException {
 
@@ -59,13 +56,13 @@ public class ServiceHandler {
         logger.info("SUMMARY:"
                 + "\nDirectories Scanned..............." + directoryCount
                 + "\npom.xml Files Processed..........." + pomFileCount
-                + "\nservices.xml Files Processed......" + servicesXMLCount
+                + "\nweb.xml Files Processed..........." + webXMLFileCount
                 + "\njava Files Processed.............." + javaFileCount
-                + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
+                + "\nModules .........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nServices........[Created:" + serviceCreator.getCreatedAssetCount()
-                + ", Existing:" + serviceCreator.getExistingAssetCount() + "]"
-                + "\nAssociations....[Added:" + gregDependencyHandler.getAddedAssocationCount()
+                + "\nWebApplications..[Created:" + webApplicationCreator.getCreatedAssetCount()
+                + ", Existing:" + webApplicationCreator.getExistingAssetCount() + "]"
+                + "\nAssocations......[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
     }
 
@@ -91,60 +88,43 @@ public class ServiceHandler {
     public void process(MavenProject project, File file) throws MojoExecutionException{
         logger.debug("Processing " + file.getAbsoluteFile());
 
-        if (project.getVersion().contains("$")){
-            EffectivePom effectivePom = new EffectivePom(project.getFile());
-            project = effectivePom.fillChildProject(project);
-        }
+        if(file.getName().equals("web.xml")){
+            webXMLFileCount++;
 
-        if (file.getName().equals("services.xml")){
-            servicesXMLCount++;
+            if (project.getVersion().contains("$")){
+                EffectivePom effectivePom = new EffectivePom(project.getFile());
+                project = effectivePom.fillChildProject(project);
+            }
 
             List<Object> serviceInfoList = null;
             try {
-                serviceInfoList = ServicesXMLParser.parse(file);
+                serviceInfoList = WebXMLParser.parse(file);
             } catch (SAXException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
+                throw  new MojoExecutionException(e.getMessage(), e);
             } catch (IOException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
+                throw  new MojoExecutionException(e.getMessage(), e);
             } catch (ParserConfigurationException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
+                throw  new MojoExecutionException(e.getMessage(), e);
             }
 
             for (int i = 0; i < serviceInfoList.size(); i++){
                 Map<String, String> serviceInfo = (Map<String, String>)serviceInfoList.get(i);
                 serviceInfo.put("version", project.getVersion());
 
-                serviceCreator.create(serviceInfo);
-                createAssociations(serviceInfo, project, file);
+                webApplicationCreator.create(serviceInfo);
+                linkWebappWithModule(serviceInfo, project, file);
             }
 
-        }else if (file.getName().endsWith(".java")){
-            javaFileCount++;
-
-            List<Object> serviceInfoList = null;
-            try {
-                serviceInfoList = ServiceJavaFileParser.parse(file);
-            } catch (IOException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            }
-
-            for (int i = 0; i < serviceInfoList.size(); i++){
-                Map<String, String> serviceInfo = (Map<String, String>)serviceInfoList.get(i);
-                serviceInfo.put("version", project.getVersion());
-
-                serviceCreator.create(serviceInfo);
-                createAssociations(serviceInfo, project, file);
-            }
         }
     }
 
-    public void createAssociations(Map<String, String> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
+    public void linkWebappWithModule(Map<String, String> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
 
         String moduleAbsolutPath = moduleCreator.
                 getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
 
-        String dependencyReosurcePath = serviceCreator.
-                getAbsoluteResourcePath(new String[]{parameters.get("name"), parameters.get("namespace")});
+        String dependencyReosurcePath = webApplicationCreator.
+                getAbsoluteResourcePath(new String[]{parameters.get("name"),parameters.get("namespace")});
 
         if (!moduleCreator.isModuleExisting(project.getArtifactId(), project.getVersion())){
             moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), currentPOM.getAbsolutePath()});
