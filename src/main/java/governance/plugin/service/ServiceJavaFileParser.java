@@ -17,7 +17,7 @@ import java.util.List;
 public class ServiceJavaFileParser {
     private static ASTParser parser = ASTParser.newParser(AST.JLS3);
 
-    public static List<Object> parse(File file){
+    public static List<Object> parse(File file) throws IOException {
         List<Object> serviceInfoList = new LinkedList();
 
         String stringFile = readFileToString(file);
@@ -34,22 +34,16 @@ public class ServiceJavaFileParser {
         return serviceInfoList;
     }
 
-    private static String readFileToString(File file){
+    private static String readFileToString(File file) throws IOException {
         FileInputStream fis = null;
-        String s = "";
-        try {
-            fis = new FileInputStream(file);
-            byte[] data = new byte[(int)file.length()];
-            try {
-                fis.read(data);
-                fis.close();
-                s = new String(data, "UTF-8");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        fis = new FileInputStream(file);
+        byte[] data = new byte[(int)file.length()];
+
+        fis.read(data);
+        fis.close();
+        String s = new String(data, "UTF-8");
+
         return s;
     }
 }

@@ -210,14 +210,14 @@ public class ServiceGovernanceMojo extends AbstractMojo
             try {
                 serviceInfoList = ServicesXMLParser.parse(file);
             } catch (SAXException e) {
-                e.printStackTrace();
-                throw new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage(), e);
             } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                throw new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage(), e);
             }
 
             for (int i = 0; i < serviceInfoList.size(); i++){
@@ -231,7 +231,13 @@ public class ServiceGovernanceMojo extends AbstractMojo
         }else if (file.getName().endsWith(".java")){
             javaFileCount++;
 
-            List<Object> serviceInfoList = ServiceJavaFileParser.parse(file);
+            List<Object> serviceInfoList = null;
+            try {
+                serviceInfoList = ServiceJavaFileParser.parse(file);
+            } catch (IOException e) {
+                //e.printStackTrace();
+                throw new MojoExecutionException(e.getMessage(), e);
+            }
             //Object[] serviceInfoArray = serviceInfoList.toArray(new Object[serviceInfoList.size()]);
 
             for (int i = 0; i < serviceInfoList.size(); i++){

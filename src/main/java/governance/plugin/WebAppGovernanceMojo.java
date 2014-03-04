@@ -210,14 +210,14 @@ public class WebAppGovernanceMojo extends AbstractMojo
             try {
                 serviceInfoList = WebXMLParser.parse(file);
             } catch (SAXException e) {
-                e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage(), e);
             } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                throw  new MojoExecutionException(e.getMessage());
+                //e.printStackTrace();
+                throw  new MojoExecutionException(e.getMessage(), e);
             }
 
             for (int i = 0; i < serviceInfoList.size(); i++){
