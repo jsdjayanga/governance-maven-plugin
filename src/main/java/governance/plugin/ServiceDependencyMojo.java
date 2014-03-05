@@ -16,7 +16,7 @@ package governance.plugin;
  * limitations under the License.
  */
 
-import governance.plugin.handler.ServiceHandler;
+import governance.plugin.handler.ServiceDependencyHandler;
 import governance.plugin.util.*;
 import governance.plugin.common.RegistrySOAPClient;
 import org.apache.maven.plugin.AbstractMojo;
@@ -34,7 +34,7 @@ import java.util.List;
  * Generates dependency tree by reading .java, services.xml, web.xml files
  */
 @Mojo( name = "service", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
-public class ServiceGovernanceMojo extends AbstractMojo
+public class ServiceDependencyMojo extends AbstractMojo
 {
     @Parameter ( defaultValue = "${project}" )
     private MavenProject project;
@@ -63,7 +63,7 @@ public class ServiceGovernanceMojo extends AbstractMojo
 
     private Configurations configurations;
 
-    public ServiceGovernanceMojo() throws MojoExecutionException{
+    public ServiceDependencyMojo() throws MojoExecutionException{
 
     }
 
@@ -76,7 +76,7 @@ public class ServiceGovernanceMojo extends AbstractMojo
         getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
         List<MavenProject> projectList = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        ServiceHandler handler = new ServiceHandler(configurations, getLog());
+        ServiceDependencyHandler handler = new ServiceDependencyHandler(configurations, getLog());
         handler.process(projectList);
     }
 

@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Created by jayanga on 3/4/14.
  */
-public class ServiceHandler {
+public class ServiceDependencyHandler {
 
     private Configurations configurations;
     private Log logger;
@@ -35,7 +35,7 @@ public class ServiceHandler {
     private ServiceCreator serviceCreator;
     private GRegDependencyHandler gregDependencyHandler;
 
-    public ServiceHandler(Configurations configurations, Log logger) throws MojoExecutionException {
+    public ServiceDependencyHandler(Configurations configurations, Log logger) throws MojoExecutionException {
         this.configurations = configurations;
         this.logger = logger;
 

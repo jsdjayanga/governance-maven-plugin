@@ -20,21 +20,20 @@ import java.util.Map;
 /**
  * Created by jayanga on 3/4/14.
  */
-public class WebappHandler {
+public class WebappDependencyHandler {
 
     private Configurations configurations;
     private Log logger;
 
     private int pomFileCount = 0;
     private int directoryCount = 0;
-    private int javaFileCount = 0;
     private int webXMLFileCount = 0;
 
     private ModuleCreator moduleCreator;
     private WebApplicationCreator webApplicationCreator;
     private GRegDependencyHandler gregDependencyHandler;
 
-    public WebappHandler(Configurations configurations, Log logger) throws MojoExecutionException {
+    public WebappDependencyHandler(Configurations configurations, Log logger) throws MojoExecutionException {
         this.configurations = configurations;
         this.logger = logger;
 
@@ -57,7 +56,6 @@ public class WebappHandler {
                 + "\nDirectories Scanned..............." + directoryCount
                 + "\npom.xml Files Processed..........." + pomFileCount
                 + "\nweb.xml Files Processed..........." + webXMLFileCount
-                + "\njava Files Processed.............." + javaFileCount
                 + "\nModules .........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
                 + "\nWebApplications..[Created:" + webApplicationCreator.getCreatedAssetCount()

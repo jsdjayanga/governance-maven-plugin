@@ -17,17 +17,9 @@ package governance.plugin;
  */
 
 
-import governance.plugin.handler.ServiceHandler;
-import governance.plugin.handler.WebappHandler;
-import governance.plugin.rxt.GRegDependencyHandler;
+import governance.plugin.handler.WebappDependencyHandler;
 import governance.plugin.util.*;
 import governance.plugin.common.RegistrySOAPClient;
-import governance.plugin.common.XmlParser;
-import governance.plugin.rxt.module.ModuleCreator;
-import governance.plugin.rxt.webapp.WebApplicationCreator;
-import governance.plugin.rxt.webapp.WebXMLParser;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -35,20 +27,16 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  * Generates dependency tree by reading a pom.xml
  */
 @Mojo( name = "webapp", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
-public class WebAppGovernanceMojo extends AbstractMojo
+public class WebAppDependencyMojo extends AbstractMojo
 {
     @Parameter ( defaultValue = "${project}" )
     private MavenProject project;
@@ -76,7 +64,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
 
     private Configurations configurations;
 
-    public WebAppGovernanceMojo() throws MojoExecutionException{
+    public WebAppDependencyMojo() throws MojoExecutionException{
 
     }
 
@@ -89,7 +77,7 @@ public class WebAppGovernanceMojo extends AbstractMojo
         getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
         List<MavenProject> projectList = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        WebappHandler handler = new WebappHandler(configurations, getLog());
+        WebappDependencyHandler handler = new WebappDependencyHandler(configurations, getLog());
         handler.process(projectList);
     }
 
