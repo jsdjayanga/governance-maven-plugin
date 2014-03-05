@@ -75,10 +75,10 @@ public class WebAppDependencyMojo extends AbstractMojo
         configure();
 
         getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
-        List<MavenProject> projectList = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
+        List<MavenProject> pomTree = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        WebappDependencyHandler handler = new WebappDependencyHandler(configurations, getLog());
-        handler.process(projectList);
+        WebappDependencyHandler webappDependencyHandler = new WebappDependencyHandler(configurations, getLog());
+        webappDependencyHandler.process(pomTree);
     }
 
     private void configure(){

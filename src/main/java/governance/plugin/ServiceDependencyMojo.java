@@ -74,10 +74,10 @@ public class ServiceDependencyMojo extends AbstractMojo
         configure();
 
         getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
-        List<MavenProject> projectList = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
+        List<MavenProject> pomTree = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        ServiceDependencyHandler handler = new ServiceDependencyHandler(configurations, getLog());
-        handler.process(projectList);
+        ServiceDependencyHandler serviceDependencyHandler = new ServiceDependencyHandler(configurations, getLog());
+        serviceDependencyHandler.process(pomTree);
     }
 
     private void configure(){
