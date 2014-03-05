@@ -75,9 +75,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
     	configure();
     	
     	getLog().info("Retreving pom tree");
-    	List<MavenProject> pomTree = MavenProjectScanner.getPOMTree(configurations.getRepoLocation() ,configurations.getBuildProfileId());
-    	
-    	createEffectivePoms(pomTree);
+    	List<MavenProject> pomTree = MavenProjectScanner.getEffectivePOMTree(configurations.getRepoLocation() ,configurations.getBuildProfileId());
     	
     	moduleDependecnyHandler.process(pomTree);
     	
@@ -95,12 +93,5 @@ public class ModuleDependecnyMojo extends AbstractMojo
                 "wso2carbon.jks");
     	
     	RegistrySOAPClient.setCredentials(configurations.getGregUserName(), configurations.getGregPassword());
-    }
-    
-    private void createEffectivePoms(List<MavenProject> pomTree) throws MojoExecutionException{
-    	for (MavenProject project : pomTree){
-    		EffectivePom effectivePom = new EffectivePom(project.getFile());
-        	project = effectivePom.fillChildProject(project);
-    	}
     }
 }

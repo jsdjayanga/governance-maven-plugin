@@ -24,6 +24,19 @@ public class MavenProjectScanner {
         return projectList;
     }
 
+    public static List<MavenProject> getEffectivePOMTree(String rootPomPath, String buildProfileID) throws MojoExecutionException {
+        projectList.clear();
+
+        scanPOMTree(rootPomPath, buildProfileID);
+
+        for (MavenProject project : projectList){
+            EffectivePom effectivePom = new EffectivePom(project.getFile());
+            project = effectivePom.fillChildProject(project);
+        }
+
+        return projectList;
+    }
+
     private static void scanPOMTree(String rootPomPath, String buildProfileID) throws MojoExecutionException {
         String filePath = rootPomPath.concat(File.separatorChar + "pom.xml");
         MavenProject project = createMavenProject(new File(filePath));
