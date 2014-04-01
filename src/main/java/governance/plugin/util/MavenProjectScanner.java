@@ -46,7 +46,6 @@ public class MavenProjectScanner {
         List<Profile> profiles = project.getModel().getProfiles();
         for (Profile profile : profiles){
             if (profile.getId().equals(buildProfileID)){
-                //getLog().info("Adding modules of maven profile '"  + buildProfileID + "'");
                 modules.addAll(profile.getModules());
             }
         }
@@ -59,8 +58,6 @@ public class MavenProjectScanner {
     public static MavenProject createMavenProject(File file) throws MojoExecutionException{
         MavenProject project = null;
         if (file.exists()){
-            //getLog().debug("Processing " + file.getAbsoluteFile());
-
             Model model = XmlParser.parsePom(file);
             if (model == null){
                 throw new MojoExecutionException("Error while processing  " + file.getAbsoluteFile());

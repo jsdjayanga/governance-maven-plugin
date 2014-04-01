@@ -22,6 +22,11 @@ public class ModuleCreator extends AbstractAssetCreator {
 	}
 	
 	@Override
+	/**
+	 * @param parameters Array of 2 strings, where first elements must be the 'artifactId'
+	 * 					 and second element must be the 'version' of the module
+	 * @return the relative Greg repository resource path of the module.
+	 */
 	public String getResourcePath(String[] parameters) throws MojoExecutionException{
 		if (parameters.length != 2){
 			throw new MojoExecutionException("Module Resource Path expects 2 parameters: " +
@@ -64,6 +69,18 @@ public class ModuleCreator extends AbstractAssetCreator {
 		}
 		
 		return isModuleExisting;
+	}
+	
+	/**
+	 * Get the relative path of a module if the module is existing in the registry
+	 * @param artifactId module artifact id
+	 * @param version module version
+	 * @return relative path of a module
+	 * @throws MojoExecutionException
+	 */
+	public String getPathIfModuleExisting(String artifactId, String version) throws MojoExecutionException{
+		String modulePath = getResourcePath(new String[]{artifactId, version});
+		return super.assetCreatorUtil.isAssetExisting(modulePath)? modulePath : null;
 	}
 	
 	public boolean isModuleExisting(String artifactId, String version) throws MojoExecutionException{

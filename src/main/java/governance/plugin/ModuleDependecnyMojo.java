@@ -16,7 +16,6 @@ package governance.plugin;
  * limitations under the License.
  */
 
-import governance.plugin.util.EffectivePom;
 import governance.plugin.util.MavenProjectScanner;
 import governance.plugin.common.RegistrySOAPClient;
 import governance.plugin.handler.ModuleDependecnyHandler;
@@ -66,8 +65,7 @@ public class ModuleDependecnyMojo extends AbstractMojo
 	private Configurations configurations;
 	
     
-    public void execute() throws MojoExecutionException
-    {	
+    public void execute() throws MojoExecutionException{	
     	configurations = new Configurations(project, settings, repositoryLocation, gregServiceUrl, gregUsername, gregPassword, gregHome, buildProfile);
     	
    	 	ModuleDependecnyHandler moduleDependecnyHandler = new ModuleDependecnyHandler(configurations, getLog());

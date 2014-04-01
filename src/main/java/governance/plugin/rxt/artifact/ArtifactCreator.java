@@ -58,4 +58,9 @@ public class ArtifactCreator extends AbstractAssetCreator{
 		
 		return isDependencyCreated;
 	}
+	
+	public String getPathIfArtifactExisting(String groupId, String artifactId, String version) throws MojoExecutionException{
+		String artifactPath = getResourcePath(new String[]{groupId, artifactId, version});
+		return super.assetCreatorUtil.isAssetExisting(artifactPath)? artifactPath : null;
+	}
 }

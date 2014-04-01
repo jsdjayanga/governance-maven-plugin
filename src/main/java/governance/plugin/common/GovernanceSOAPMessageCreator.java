@@ -186,6 +186,28 @@ public class GovernanceSOAPMessageCreator {
         soapRequest.append("</soapenv:Envelope>");
         return soapRequest.toString();
     }
+    
+    public static String createEditArtifactMessage(String resourcePath, String assetType, String data){
+    	StringBuffer soapRequest = new StringBuffer();
+    	soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ser='http://services.generic.governance.carbon.wso2.org'>");
+    	soapRequest.append("<soapenv:Header/>");
+    	soapRequest.append("<soapenv:Body>");
+    	soapRequest.append("<ser:editArtifact>");
+    	soapRequest.append("<ser:path>");
+    	soapRequest.append(resourcePath);
+    	soapRequest.append("</ser:path>");
+    	soapRequest.append("<ser:key>");
+    	soapRequest.append(assetType);
+    	soapRequest.append("</ser:key>");
+    	soapRequest.append("<ser:info><![CDATA[");
+    	soapRequest.append(data);
+    	soapRequest.append("]]></ser:info>");
+    	soapRequest.append("<ser:lifecycleAttribute></ser:lifecycleAttribute>");
+    	soapRequest.append("</ser:editArtifact>");
+    	soapRequest.append("</soapenv:Body>");
+    	soapRequest.append("</soapenv:Envelope>");
+    	return soapRequest.toString();
+    }
 	
 	public static String  getCurrentTime(){
 		long unformatedTime = System.currentTimeMillis();

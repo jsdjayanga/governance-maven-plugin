@@ -36,7 +36,13 @@
      		<name label="Valid Until">Valid Until</name>
     	    </field>
             <field type="text">
-                <name label="Licence">Licence</name>
+                <name label="License">License</name>
+            </field>
+	    <field type="text">
+                <name label="JAR File Name">JAR Name</name>
+            </field>
+	    <field type="text">
+                <name label="Packaging Type">Packaging Type</name>
             </field>
         </table>
 	<table name="Images">

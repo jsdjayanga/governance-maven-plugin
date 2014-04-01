@@ -1,8 +1,6 @@
 package governance.plugin.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -85,28 +83,14 @@ public class EffectivePom {
     }
 
 	private void runEffectivePomCommand() throws MojoExecutionException {
-		Process mavenCommandProcess;
         try {
         	System.out.println("Running " + MAVEN_COMMAND + " on " + pomFileLocation + ". This might take few minutes....");
-	        mavenCommandProcess = Runtime.getRuntime().exec(MAVEN_COMMAND, null,new File(pomFileLocation));
-	        
-	        String currentInput = null;
-	    	BufferedReader input = new BufferedReader(new InputStreamReader(mavenCommandProcess.getInputStream()));
-	    	while ((currentInput = input.readLine()) != null) {//Draining output
-	    	}
-	    	
-	    	mavenCommandProcess.waitFor();
-	    	if (mavenCommandProcess.exitValue() != 0){
-            	System.out.println("------------------------------------------------------------------------------------------------");
-            	System.out.println("ERROR! running command '" + MAVEN_COMMAND + "' on '" + pomFileLocation +"' FAILED!");
-            	System.out.println("------------------------------------------------------------------------------------------------");
-            	throw new MojoExecutionException("Cannot execute '" +  MAVEN_COMMAND + "'! Please make sure there are no build faiilures in the maven project @ " + pomFileLocation);
-            }
-            
-            mavenCommandProcess.destroy();
-	    	 
+        	CommandExecuter.executeCommand(MAVEN_COMMAND, new File(pomFileLocation), false);
         } catch (Exception e) {
-	        throw new MojoExecutionException(e.getMessage(), e);
+        	System.out.println("------------------------------------------------------------------------------------------------");
+        	System.out.println("ERROR! running command '" + MAVEN_COMMAND + "' on '" + pomFileLocation +"' FAILED!");
+        	System.out.println("------------------------------------------------------------------------------------------------");
+        	throw new MojoExecutionException("Cannot execute '" +  MAVEN_COMMAND + "'! Please make sure there are no build faiilures in the maven project @ " + pomFileLocation);
         }	
     }
 	

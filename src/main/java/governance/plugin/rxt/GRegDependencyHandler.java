@@ -33,7 +33,6 @@ public class GRegDependencyHandler {
 	/**
 	 * Delete all current dependencies and usedBy associations of a given resource
 	 * @param absoluteResourcePath source resource path
-	 * @param type Type of the dependency
 	 * @throws MojoExecutionException 
 	 */
 	public void removeExistingAssociations(String absoluteResourcePath) throws MojoExecutionException{

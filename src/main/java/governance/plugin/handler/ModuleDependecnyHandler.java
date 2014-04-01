@@ -1,6 +1,5 @@
 package governance.plugin.handler;
 
-import java.io.File;
 import java.util.List;
 
 import governance.plugin.rxt.GRegDependencyHandler;
@@ -96,5 +95,4 @@ public class ModuleDependecnyHandler {
     	
     	return returnValue;
     }
-	
 }

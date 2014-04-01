@@ -1,4 +1,4 @@
-package governance.plugin;
+package governance.plugin.common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,9 +59,9 @@ public class MavenDependencyVersionResolver {
 	}
 	
 	public static void resolveVersions(String pomFileLocation) throws MojoExecutionException{
-			String location = pomFileLocation.substring(0, pomFileLocation.lastIndexOf(File.separatorChar));
-			runDependencyMavenPlugin(location);
-			readVersionsFromFile(location);
+    	String location = pomFileLocation.substring(0, pomFileLocation.lastIndexOf(File.separatorChar));
+    	runDependencyMavenPlugin(location);
+    	readVersionsFromFile(location);
 	}
 	
 	public static void resetResolvedDependencies(){
