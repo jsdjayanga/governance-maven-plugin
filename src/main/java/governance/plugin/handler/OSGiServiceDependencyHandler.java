@@ -6,12 +6,14 @@ import governance.plugin.rxt.osgiservice.BundleXMLParser;
 import governance.plugin.rxt.osgiservice.OSGiServiceCreator;
 import governance.plugin.rxt.service.ServicesXMLParser;
 import governance.plugin.util.Configurations;
+import governance.plugin.util.PathNameResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
 
+import javax.lang.model.element.NestingKind;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
@@ -51,10 +53,6 @@ public class OSGiServiceDependencyHandler {
 
         for (MavenProject project : projectTree){
             if (project.getPackaging().equalsIgnoreCase("bundle")){
-                //File rootFile = project.getFile().getParentFile();
-                //scanDirectory(project, rootFile);
-
-                System.out.println("Bundle found: " + project.getName());
 
                 try {
                     processBundle(project);
@@ -80,12 +78,13 @@ public class OSGiServiceDependencyHandler {
     private void processBundle(MavenProject project) throws MojoExecutionException, IOException {
         List<String> list = new ArrayList<String>();
 
-        File rootDirectory = project.getFile().getParentFile();
+        File file = project.getFile();
+        File rootDirectory = file.getParentFile();
         File bundleFile = getBungleFile(rootDirectory);
         if (bundleFile != null){
             JarFile jarFile = new JarFile(bundleFile);
 
-            System.out.println("Processing Jar file=" + jarFile.getName());
+            System.out.println("Processing Jar file. [JarFile=" + jarFile.getName() + "]");
 
             Enumeration e = jarFile.entries();
             while (e.hasMoreElements()){
@@ -93,7 +92,7 @@ public class OSGiServiceDependencyHandler {
 
                 if (!jarEntry.isDirectory() && jarEntry.getName().contains("OSGI-INF") && jarEntry.getName().endsWith(".xml")){
 
-                    System.out.println("======XML Files=======++:" + jarEntry.getName());
+                    System.out.println("Reading Service-Component xml. [File=" + jarEntry.getName() + "]");
 
                     InputStream inputStream = jarFile.getInputStream(jarEntry);
 
@@ -115,31 +114,17 @@ public class OSGiServiceDependencyHandler {
                     for (int i = 0; i < osgiServiceInfoList.size(); i++){
                         Map<String, Object> osgiServiceInfo = (Map<String, Object>)osgiServiceInfoList.get(i);
 
-                        System.out.println("Creating osgi services ");
+                        String className = (String)osgiServiceInfo.get("className");
+                        System.out.println("Creating OSGi service. [OSGiService=" + className + "]");
 
                         osgiServiceInfo.put("version", project.getVersion());
                         osgiServiceCreator.create(osgiServiceInfo);
 
-                        // TODO - create associations.
+                        //createAssociations(osgiServiceInfo, project, file);
                     }
 
-                    /*
-                    BufferedReader br = null;
-                    StringBuilder sb = new StringBuilder();
-
-                    String line;
-
-                    br = new BufferedReader(new InputStreamReader(inputStream));
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    br.close();
-                    */
-
-                    //System.out.println("========file===========+:" + sb.toString());
                 }
             }
-            // Get descriptor FILES List and process one by one.
         }
 
 
@@ -160,89 +145,19 @@ public class OSGiServiceDependencyHandler {
         return null;
     }
 
-
-    /*
-    private void scanDirectory(MavenProject project, File file) throws MojoExecutionException{
-        if (file != null){
-            if (file.isDirectory()){
-                directoryCount++;
-
-                File[] children = file.listFiles();
-                if (children == null){
-                    logger.debug("Empty directory skipping.. :" + file.getAbsolutePath());
-                }else{
-                    for (File child : children){
-                        scanDirectory(project, child);
-                    }
-                }
-            }else{
-                process(project, file);
-            }
-        }
-    }
-
-    public void process(MavenProject project, File file) throws MojoExecutionException{
-        logger.debug("Processing " + file.getAbsoluteFile());
-
-        if (file.getName().equals("services.xml")){
-            servicesXMLCount++;
-
-            if (project.getVersion().contains("$")){
-                EffectivePom effectivePom = new EffectivePom(project.getFile());
-                project = effectivePom.fillChildProject(project);
-            }
-
-            List<Object> serviceInfoList = null;
-            try {
-                serviceInfoList = ServicesXMLParser.parse(file);
-            } catch (SAXException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            } catch (ParserConfigurationException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            }
-
-            for (int i = 0; i < serviceInfoList.size(); i++){
-                Map<String, String> serviceInfo = (Map<String, String>)serviceInfoList.get(i);
-                serviceInfo.put("version", project.getVersion());
-
-                osgiServiceCreator.create(serviceInfo);
-                createAssociations(serviceInfo, project, file);
-            }
-
-        }else if (file.getName().endsWith(".java")){
-            javaFileCount++;
-
-            if (project.getVersion().contains("$")){
-                EffectivePom effectivePom = new EffectivePom(project.getFile());
-                project = effectivePom.fillChildProject(project);
-            }
-
-            List<Object> serviceInfoList = null;
-            try {
-                serviceInfoList = ServiceJavaFileParser.parse(file);
-            } catch (IOException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            }
-
-            for (int i = 0; i < serviceInfoList.size(); i++){
-                Map<String, String> serviceInfo = (Map<String, String>)serviceInfoList.get(i);
-                serviceInfo.put("version", project.getVersion());
-
-                osgiServiceCreator.create(serviceInfo);
-                createAssociations(serviceInfo, project, file);
-            }
-        }
-    }
-
-    public void createAssociations(Map<String, String> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
+    public void createAssociations(Map<String, Object> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
 
         String moduleAbsolutPath = moduleCreator.
                 getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
 
+        String className = (String)parameters.get("className");
+        String namespace = PathNameResolver.PackageToNamespace(className.substring(0, className.lastIndexOf(".")));
+
         String dependencyReosurcePath = osgiServiceCreator.
-                getAbsoluteResourcePath(new String[]{parameters.get("name"), parameters.get("namespace")});
+                getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
+
+        System.out.println("==========M:" + moduleAbsolutPath);
+        System.out.println("==========R:" + dependencyReosurcePath);
 
         if (!moduleCreator.isModuleExisting(project.getArtifactId(), project.getVersion())){
             moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), currentPOM.getAbsolutePath()});
@@ -256,6 +171,4 @@ public class OSGiServiceDependencyHandler {
         gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath,
                 GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
     }
-
-    */
 }
