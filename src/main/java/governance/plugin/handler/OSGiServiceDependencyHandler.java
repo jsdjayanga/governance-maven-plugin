@@ -120,7 +120,7 @@ public class OSGiServiceDependencyHandler {
                         osgiServiceInfo.put("version", project.getVersion());
                         osgiServiceCreator.create(osgiServiceInfo);
 
-                        //createAssociations(osgiServiceInfo, project, file);
+                        createAssociations(osgiServiceInfo, project, file);
                     }
 
                 }
