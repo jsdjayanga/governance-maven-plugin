@@ -1,5 +1,8 @@
 package governance.plugin.common;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Create SOAP messages/request required to create "Module"  and 
  * assets and related assets in Governance Registry.
@@ -182,6 +185,59 @@ public class GovernanceSOAPMessageCreator {
         soapRequest.append(GovernanceSOAPMessageCreator.getImageTags());
         soapRequest.append("</metadata>]]></ser:info>");
         soapRequest.append("</ser:addWebapp>");
+        soapRequest.append("</soapenv:Body>");
+        soapRequest.append("</soapenv:Envelope>");
+        return soapRequest.toString();
+    }
+
+    public static String  createAddOSGiServiceRequest(String name, String namespace, String version, String description, List<Map<String, String>> references){
+        StringBuffer soapRequest = new StringBuffer();
+        soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
+        soapRequest.append("xmlns:ser='http://services.add.osgiservice.governance.carbon.wso2.org'>");
+        soapRequest.append("<soapenv:Header/>");
+        soapRequest.append("<soapenv:Body>");
+        soapRequest.append("<ser:addOSGiService>");
+        soapRequest.append("<ser:info><![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview><name>");
+        soapRequest.append(name);
+        soapRequest.append("</name>");
+        soapRequest.append("<namespace>");
+        soapRequest.append(namespace);
+        soapRequest.append("</namespace>");
+        soapRequest.append("<version>");
+        soapRequest.append(version);
+        soapRequest.append("</version>");
+        soapRequest.append("<description>");
+        soapRequest.append(description);
+        soapRequest.append("</description>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getMetaDataTags());
+        soapRequest.append("</overview>");
+        soapRequest.append(GovernanceSOAPMessageCreator.getImageTags());
+        soapRequest.append("<exports>");
+        soapRequest.append("<componentName>");
+        soapRequest.append(name);
+        soapRequest.append("</componentName>");
+        soapRequest.append("</exports>");
+
+        soapRequest.append("<imports>");
+        for (int index = 0; index < references.size(); index++){
+            Map<String, String> refMap = (Map<String, String>)references.get(index);
+            if (refMap != null){
+                String refName = refMap.get("name");
+                String refInterface = refMap.get("interface");
+
+                soapRequest.append("<referenceName>");
+                soapRequest.append(refName);
+                soapRequest.append("</referenceName>");
+
+                soapRequest.append("<interface>");
+                soapRequest.append(refInterface);
+                soapRequest.append("</interface>");
+            }
+        }
+        soapRequest.append("</imports>");
+
+        soapRequest.append("</metadata>]]></ser:info>");
+        soapRequest.append("</ser:addOSGiService>");
         soapRequest.append("</soapenv:Body>");
         soapRequest.append("</soapenv:Envelope>");
         return soapRequest.toString();
