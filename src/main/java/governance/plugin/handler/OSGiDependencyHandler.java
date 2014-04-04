@@ -1,5 +1,6 @@
 package governance.plugin.handler;
 
+import com.google.inject.internal.util.$SourceProvider;
 import governance.plugin.rxt.GRegDependencyHandler;
 import governance.plugin.rxt.module.ModuleCreator;
 import governance.plugin.rxt.osgi.BundleXMLParser;
@@ -121,13 +122,13 @@ public class OSGiDependencyHandler {
                         osgiServiceComponentCreator.create(osgiServiceComponentInfo);
 
                         createAssociations(osgiServiceComponentInfo, project, file);
+
+                        markAssociationsWithOSGiServicesMap(osgiServiceComponentInfo);
                     }
 
                 }
             }
         }
-
-
     }
 
     private void createDependentOSGiServices(Map<String, Object> osgiServiceComponentInfo) throws MojoExecutionException {
@@ -183,9 +184,6 @@ public class OSGiDependencyHandler {
         String dependencyReosurcePath = osgiServiceComponentCreator.
                 getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
 
-        System.out.println("==========M:" + moduleAbsolutPath);
-        System.out.println("==========R:" + dependencyReosurcePath);
-
         if (!moduleCreator.isModuleExisting(project.getArtifactId(), project.getVersion())){
             moduleCreator.create(new String[]{project.getArtifactId(), project.getVersion(), currentPOM.getAbsolutePath()});
         }
@@ -197,5 +195,39 @@ public class OSGiDependencyHandler {
         // Adding the invert association(i.e.dependency is usedBy source)
         gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath,
                 GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
+    }
+
+    private void markAssociationsWithOSGiServicesMap(Map<String, Object> parameters) throws MojoExecutionException {
+        String className = (String)parameters.get("className");
+        String namespace = PathNameResolver.PackageToNamespace(className.substring(0, className.lastIndexOf(".")));
+
+        String reosurcePath = osgiServiceComponentCreator.
+                getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
+
+        List<Map<String, String>> references = (List<Map<String, String>>)parameters.get("references");
+        if (references != null){
+            for (int index = 0; index < references.size(); index++){
+                Map<String, String> refMap = (Map<String, String>)references.get(index);
+                if (refMap != null){
+
+                    String refInterface = refMap.get("interface");
+
+                    String dependencyClassName = refInterface.substring(refInterface.lastIndexOf(".") + 1);
+                    String dependencyNamespace = refInterface.substring(0, refInterface.lastIndexOf("."));
+                    dependencyNamespace = PathNameResolver.PackageToNamespace(dependencyNamespace);
+
+                    String dependencyReosurcePath = osgiServiceCreator.
+                            getAbsoluteResourcePath(new String[]{dependencyClassName, dependencyNamespace});
+
+                    // Adding the dependency
+                    gregDependencyHandler.addAssociation(reosurcePath, dependencyReosurcePath,
+                            GRegDependencyHandler.GREG_ASSOCIATION_TYPE_IMPORTS);
+
+                    // Adding the invert association(i.e.dependency is usedBy source)
+                    gregDependencyHandler.addAssociation(dependencyReosurcePath, reosurcePath,
+                            GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
+                }
+            }
+        }
     }
 }
