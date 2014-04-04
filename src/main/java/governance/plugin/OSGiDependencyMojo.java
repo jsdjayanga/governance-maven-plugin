@@ -17,8 +17,7 @@ package governance.plugin;
  */
 
 import governance.plugin.common.RegistrySOAPClient;
-import governance.plugin.handler.OSGiServiceDependencyHandler;
-import governance.plugin.handler.ServiceDependencyHandler;
+import governance.plugin.handler.OSGiDependencyHandler;
 import governance.plugin.util.Configurations;
 import governance.plugin.util.MavenProjectScanner;
 import org.apache.maven.plugin.AbstractMojo;
@@ -35,8 +34,8 @@ import java.util.List;
 /**
  * Generates dependency tree for OSGi services by reading bundle meta data xml file
  */
-@Mojo( name = "osgiservice", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
-public class OSGiServiceDependencyMojo extends AbstractMojo
+@Mojo( name = "osgi", defaultPhase = LifecyclePhase.DEPLOY,  aggregator = true)
+public class OSGiDependencyMojo extends AbstractMojo
 {
     @Parameter ( defaultValue = "${project}" )
     private MavenProject project;
@@ -65,7 +64,7 @@ public class OSGiServiceDependencyMojo extends AbstractMojo
 
     private Configurations configurations;
 
-    public OSGiServiceDependencyMojo() throws MojoExecutionException{
+    public OSGiDependencyMojo() throws MojoExecutionException{
 
     }
 
@@ -78,8 +77,8 @@ public class OSGiServiceDependencyMojo extends AbstractMojo
         getLog().info("Reading POM tree from:" +  configurations.getRepoLocation());
         List<MavenProject> pomTree = MavenProjectScanner.getPOMTree(configurations.getRepoLocation(), configurations.getBuildProfileId());
 
-        OSGiServiceDependencyHandler osgiserviceDependencyHandler = new OSGiServiceDependencyHandler(configurations, getLog());
-        osgiserviceDependencyHandler.process(pomTree);
+        OSGiDependencyHandler osgiDependencyHandler = new OSGiDependencyHandler(configurations, getLog());
+        osgiDependencyHandler.process(pomTree);
     }
 
     private void configure(){

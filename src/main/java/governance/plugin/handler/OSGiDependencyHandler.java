@@ -2,9 +2,8 @@ package governance.plugin.handler;
 
 import governance.plugin.rxt.GRegDependencyHandler;
 import governance.plugin.rxt.module.ModuleCreator;
-import governance.plugin.rxt.osgiservice.BundleXMLParser;
-import governance.plugin.rxt.osgiservice.OSGiServiceCreator;
-import governance.plugin.rxt.service.ServicesXMLParser;
+import governance.plugin.rxt.osgi.BundleXMLParser;
+import governance.plugin.rxt.osgi.OSGiServiceComponentCreator;
 import governance.plugin.util.Configurations;
 import governance.plugin.util.PathNameResolver;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -13,7 +12,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
 
-import javax.lang.model.element.NestingKind;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ import java.util.jar.JarFile;
 /**
  * Created by jayanga on 3/4/14.
  */
-public class OSGiServiceDependencyHandler {
+public class OSGiDependencyHandler {
 
     private Configurations configurations;
     private Log logger;
@@ -37,16 +35,16 @@ public class OSGiServiceDependencyHandler {
     private int javaFileCount = 0;
 
     private ModuleCreator moduleCreator;
-    private OSGiServiceCreator osgiServiceCreator;
+    private OSGiServiceComponentCreator osgiServiceComponentCreator;
     private GRegDependencyHandler gregDependencyHandler;
 
-    public OSGiServiceDependencyHandler(Configurations configurations, Log logger) throws MojoExecutionException {
+    public OSGiDependencyHandler(Configurations configurations, Log logger) throws MojoExecutionException {
         this.configurations = configurations;
         this.logger = logger;
 
         gregDependencyHandler = new GRegDependencyHandler(logger, configurations.getGergServiceUrl());
         moduleCreator = new ModuleCreator(logger, configurations.getGergServiceUrl());
-        osgiServiceCreator = new OSGiServiceCreator(logger, configurations.getGergServiceUrl());
+        osgiServiceComponentCreator = new OSGiServiceComponentCreator(logger, configurations.getGergServiceUrl());
     }
 
     public void process(List<MavenProject> projectTree) throws MojoExecutionException {
@@ -69,8 +67,8 @@ public class OSGiServiceDependencyHandler {
                 + "\njava Files Processed.............." + javaFileCount
                 + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nOSGiServices........[Created:" + osgiServiceCreator.getCreatedAssetCount()
-                + ", Existing:" + osgiServiceCreator.getExistingAssetCount() + "]"
+                + "\nOSGiServices........[Created:" + osgiServiceComponentCreator.getCreatedAssetCount()
+                + ", Existing:" + osgiServiceComponentCreator.getExistingAssetCount() + "]"
                 + "\nAssociations....[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
     }
@@ -102,25 +100,25 @@ public class OSGiServiceDependencyHandler {
                     FileOutputStream outputStream = new FileOutputStream(tempFile);
                     IOUtils.copy(inputStream, outputStream);
 
-                    List<Object> osgiServiceInfoList = null;
+                    List<Object> osgiServiceComponentInfoList = null;
                     try {
-                        osgiServiceInfoList = BundleXMLParser.parse(tempFile);
+                        osgiServiceComponentInfoList = BundleXMLParser.parse(tempFile);
                     } catch (SAXException e1) {
                         e1.printStackTrace();
                     } catch (ParserConfigurationException e1) {
                         e1.printStackTrace();
                     }
 
-                    for (int i = 0; i < osgiServiceInfoList.size(); i++){
-                        Map<String, Object> osgiServiceInfo = (Map<String, Object>)osgiServiceInfoList.get(i);
+                    for (int i = 0; i < osgiServiceComponentInfoList.size(); i++){
+                        Map<String, Object> osgiServiceComponentInfo = (Map<String, Object>)osgiServiceComponentInfoList.get(i);
 
-                        String className = (String)osgiServiceInfo.get("className");
+                        String className = (String)osgiServiceComponentInfo.get("className");
                         System.out.println("Creating OSGi service. [OSGiService=" + className + "]");
 
-                        osgiServiceInfo.put("version", project.getVersion());
-                        osgiServiceCreator.create(osgiServiceInfo);
+                        osgiServiceComponentInfo.put("version", project.getVersion());
+                        osgiServiceComponentCreator.create(osgiServiceComponentInfo);
 
-                        createAssociations(osgiServiceInfo, project, file);
+                        createAssociations(osgiServiceComponentInfo, project, file);
                     }
 
                 }
@@ -153,7 +151,7 @@ public class OSGiServiceDependencyHandler {
         String className = (String)parameters.get("className");
         String namespace = PathNameResolver.PackageToNamespace(className.substring(0, className.lastIndexOf(".")));
 
-        String dependencyReosurcePath = osgiServiceCreator.
+        String dependencyReosurcePath = osgiServiceComponentCreator.
                 getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
 
         System.out.println("==========M:" + moduleAbsolutPath);

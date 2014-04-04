@@ -1,4 +1,4 @@
-package governance.plugin.rxt.osgiservice;
+package governance.plugin.rxt.osgi;
 
 import com.google.inject.internal.util.$SourceProvider;
 import governance.plugin.util.PathNameResolver;

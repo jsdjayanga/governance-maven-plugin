@@ -1,4 +1,4 @@
-package governance.plugin.rxt.osgiservice;
+package governance.plugin.rxt.osgi;
 
 import governance.plugin.common.GovernanceSOAPMessageCreator;
 import governance.plugin.rxt.AbstractAssetCreator;
@@ -12,13 +12,13 @@ import java.util.Map;
 /**
  * Created by jayanga on 2/9/14.
  */
-public class OSGiServiceCreator extends AbstractAssetCreator {
+public class OSGiServiceComponentCreator extends AbstractAssetCreator {
 
-    public static final String GREG_SERVICE_RESOURCE_PATH = "/trunk/osgiservices/";
+    public static final String GREG_SERVICE_RESOURCE_PATH = "/trunk/osgiservicecomponents/";
 
     Log logger;
-    public OSGiServiceCreator(Log logger, String gregServiceUrl) throws MojoExecutionException {
-        super(gregServiceUrl, "OSGiService.OSGiServiceHttpsSoap12Endpoint");
+    public OSGiServiceComponentCreator(Log logger, String gregServiceUrl) throws MojoExecutionException {
+        super(gregServiceUrl, "OSGiServiceComponent.OSGiServiceComponentHttpsSoap12Endpoint");
         this.logger = logger;
     }
 
@@ -38,11 +38,11 @@ public class OSGiServiceCreator extends AbstractAssetCreator {
         String OSGiServicePath = getResourcePath(new String[]{name, namespace});
 
         String createServiceRequst =
-                GovernanceSOAPMessageCreator.createAddOSGiServiceRequest(name
+                GovernanceSOAPMessageCreator.createAddOSGiServiceComponentRequest(name
                         , namespace
                         , version
                         , description
-                        ,references);
+                        , references);
 
         System.out.println(createServiceRequst);
 
@@ -71,6 +71,6 @@ public class OSGiServiceCreator extends AbstractAssetCreator {
         String name = parameters[0];
         String namespace = parameters[1];
 
-        return PathNameResolver.getResourcePath(name, namespace, OSGiServiceCreator.GREG_SERVICE_RESOURCE_PATH);
+        return PathNameResolver.getResourcePath(name, namespace, OSGiServiceComponentCreator.GREG_SERVICE_RESOURCE_PATH);
     }
 }
