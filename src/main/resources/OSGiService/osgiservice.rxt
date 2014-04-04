@@ -43,25 +43,5 @@
                 <name>Banner</name>
             </field>
         </table>
-        <table name="Exports" columns="1" maxoccurs="unbounded">
-            <subheading>
-                <heading>Component Name</heading>
-            </subheading>
-            <field type="text">
-                <name label="Component Name">Component Name</name>
-            </field>
-        </table>
-        <table name="Imports" columns="2" maxoccurs="unbounded">
-            <subheading>
-                <heading>Reference Name</heading>
-                <heading>Interface</heading>
-            </subheading>
-            <field type="text">
-                <name label="Reference Name">Reference Name</name>
-            </field>
-            <field type="text">
-                <name label="Interface">Interface</name>
-            </field>
-        </table>
     </content>
 </artifactType>
