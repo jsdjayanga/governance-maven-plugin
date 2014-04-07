@@ -87,39 +87,4 @@ public class BundleXMLParser {
         return osgiServiceInfoList;
     }
 
-    /*
-    private static String getNamespace(Node node){
-
-        Node namespaceNode = node.getAttributes().getNamedItem("targetNamespace");
-        if (namespaceNode != null && namespaceNode.getTextContent() != ""){
-            return namespaceNode.getTextContent();
-        }
-
-        NodeList nodeList = node.getChildNodes();
-        if (nodeList != null){
-            for (int index = 0; index < nodeList.getLength(); index++){
-                Node cnode = nodeList.item(index);
-                if (cnode != null){
-                    if (cnode.getNodeName().equals("parameter")){
-                        NamedNodeMap namedNodeMap = cnode.getAttributes();
-                        if (namedNodeMap != null){
-                            Node nameNode = namedNodeMap.getNamedItem("name");
-                            if (nameNode != null && nameNode.getTextContent().equals("ServiceClass")){
-                                String serviceClassName = cnode.getTextContent().trim();
-                                int dotOffSet = serviceClassName.lastIndexOf('.');
-                                if (dotOffSet == -1){
-                                    dotOffSet = serviceClassName.length();
-                                }
-                                String namespace = PathNameResolver.PackageToNamespace(serviceClassName.substring(0, dotOffSet));
-                                return namespace;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return "http://defaultpackage";
-    }
-    */
 }

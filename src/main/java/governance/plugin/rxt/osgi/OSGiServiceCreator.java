@@ -38,8 +38,6 @@ public class OSGiServiceCreator extends AbstractAssetCreator {
                         , version
                         , description);
 
-        System.out.println(createServiceRequst);
-
         logger.debug("OSGi Service creation request. [" + createServiceRequst + "]");
 
         boolean isOSGiServiceCreated = super.createAsset(OSGiServicePath, createServiceRequst);

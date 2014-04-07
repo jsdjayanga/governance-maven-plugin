@@ -33,8 +33,6 @@ public class OSGiServiceComponentCreator extends AbstractAssetCreator {
         String namespace = className.substring(0, className.lastIndexOf("."));
         namespace = PathNameResolver.PackageToNamespace(namespace);
 
-        System.out.println("=======================+:" + name + "|" + namespace);
-
         String OSGiServicePath = getResourcePath(new String[]{name, namespace});
 
         String createServiceRequst =
@@ -43,8 +41,6 @@ public class OSGiServiceComponentCreator extends AbstractAssetCreator {
                         , version
                         , description
                         , references);
-
-        System.out.println(createServiceRequst);
 
         logger.debug("Service creation request. [" + createServiceRequst + "]");
 

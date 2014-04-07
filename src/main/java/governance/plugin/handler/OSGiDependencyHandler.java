@@ -83,7 +83,7 @@ public class OSGiDependencyHandler {
         if (bundleFile != null){
             JarFile jarFile = new JarFile(bundleFile);
 
-            System.out.println("Processing Jar file. [JarFile=" + jarFile.getName() + "]");
+            logger.info("Processing Jar file. [JarFile=" + jarFile.getName() + "]");
 
             Enumeration e = jarFile.entries();
             while (e.hasMoreElements()){
@@ -91,7 +91,7 @@ public class OSGiDependencyHandler {
 
                 if (!jarEntry.isDirectory() && jarEntry.getName().contains("OSGI-INF") && jarEntry.getName().endsWith(".xml")){
 
-                    System.out.println("Reading Service-Component xml. [File=" + jarEntry.getName() + "]");
+                    logger.info("Reading Service-Component xml. [File=" + jarEntry.getName() + "]");
 
                     InputStream inputStream = jarFile.getInputStream(jarEntry);
 
@@ -114,13 +114,13 @@ public class OSGiDependencyHandler {
                         Map<String, Object> osgiServiceComponentInfo = (Map<String, Object>)osgiServiceComponentInfoList.get(i);
 
                         String className = (String)osgiServiceComponentInfo.get("className");
-                        System.out.println("Creating OSGi service. [OSGiService=" + className + "]");
-
                         osgiServiceComponentInfo.put("version", project.getVersion());
 
-                        createDependentOSGiServices(osgiServiceComponentInfo);
-                        osgiServiceComponentCreator.create(osgiServiceComponentInfo);
+                        logger.info("Creating OSGi service. [OSGiService=" + className + "]");
 
+                        createDependentOSGiServices(osgiServiceComponentInfo);
+
+                        osgiServiceComponentCreator.create(osgiServiceComponentInfo);
                         createAssociations(osgiServiceComponentInfo, project, file);
 
                         markAssociationsWithOSGiServicesMap(osgiServiceComponentInfo);
