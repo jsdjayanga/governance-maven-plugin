@@ -28,10 +28,9 @@ public class OSGiDependencyHandler {
     private Configurations configurations;
     private Log logger;
 
-    private int pomFileCount = 0;
-    private int directoryCount = 0;
-    private int servicesXMLCount = 0;
-    private int javaFileCount = 0;
+    private int bundleFileCount = 0;
+    private int bundleXMLFileCount = 0;
+
 
     private ModuleCreator moduleCreator;
     private OSGiServiceComponentCreator osgiServiceComponentCreator;
@@ -52,7 +51,7 @@ public class OSGiDependencyHandler {
 
         for (MavenProject project : projectTree){
             if (project.getPackaging().equalsIgnoreCase("bundle")){
-
+                bundleFileCount++;
                 try {
                     processBundle(project);
                 } catch (IOException e) {
@@ -62,15 +61,15 @@ public class OSGiDependencyHandler {
         }
 
         logger.info("SUMMARY:"
-                + "\nDirectories Scanned..............." + directoryCount
-                + "\npom.xml Files Processed..........." + pomFileCount
-                + "\nservices.xml Files Processed......" + servicesXMLCount
-                + "\njava Files Processed.............." + javaFileCount
-                + "\nModules ........[Created:" + moduleCreator.getCreatedAssetCount()
+                + "\nBundles Processed.................." + bundleFileCount
+                + "\nBundle  xml files Processed........" + bundleXMLFileCount
+                + "\nModules ...........................[Created:" + moduleCreator.getCreatedAssetCount()
                 + ", Existing:" + moduleCreator.getExistingAssetCount() + "]"
-                + "\nOSGiServices........[Created:" + osgiServiceComponentCreator.getCreatedAssetCount()
+                + "\nOSGiServiceComponents..............[Created:" + osgiServiceComponentCreator.getCreatedAssetCount()
                 + ", Existing:" + osgiServiceComponentCreator.getExistingAssetCount() + "]"
-                + "\nAssociations....[Added:" + gregDependencyHandler.getAddedAssocationCount()
+                + "\nOSGiServices.......................[Created:" + osgiServiceCreator.getCreatedAssetCount()
+                + ", Existing:" + osgiServiceCreator.getExistingAssetCount() + "]"
+                + "\nAssociations.......................[Added:" + gregDependencyHandler.getAddedAssocationCount()
                 + ", Deleted:" + gregDependencyHandler.getRemovedAssocationCount() + "]");
     }
 
@@ -90,6 +89,8 @@ public class OSGiDependencyHandler {
                 JarEntry jarEntry = (JarEntry)e.nextElement();
 
                 if (!jarEntry.isDirectory() && jarEntry.getName().contains("OSGI-INF") && jarEntry.getName().endsWith(".xml")){
+
+                    bundleXMLFileCount++;
 
                     logger.info("Reading Service-Component xml. [File=" + jarEntry.getName() + "]");
 
