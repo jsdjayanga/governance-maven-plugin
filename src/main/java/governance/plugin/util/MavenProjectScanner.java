@@ -30,8 +30,8 @@ public class MavenProjectScanner {
         scanPOMTree(rootPomPath, buildProfileID);
 
         for (MavenProject project : projectList){
-            EffectivePom effectivePom = new EffectivePom(project.getFile());
-            project = effectivePom.fillChildProject(project);
+    		EffectivePom effectivePom = new EffectivePom(project.getFile());
+    		project = effectivePom.fillChildProject(project);
         }
 
         return projectList;

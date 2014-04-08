@@ -34,19 +34,22 @@ public class ArtifactCreator extends AbstractAssetCreator{
 	
 	@Override
 	public boolean create(Object[] parameters) throws MojoExecutionException{
-		if (parameters.length != 3){
-			throw new MojoExecutionException("Module Creater expects 3 parameters:" +
-					"'GroupID', 'ArtifactID' and 'version'");
+		if (parameters.length < 3){
+			throw new MojoExecutionException("Module Creater expects 3 mandatory parameters:" +
+					"'GroupID', 'ArtifactID' and 'version'(3 Optional parameters: 'JarName', 'LicenseType' and 'PackagingType'");
 		}
 		
 		String groupId = (String)parameters[0];
 		String artifactId = (String)parameters[1];
 		String version = (String)parameters[2];
+		String jarName = (parameters.length > 3) ? (String)parameters[3] : null;
+		String licenseType = (parameters.length > 4) ? (String)parameters[4] : null;
+		String packaginType = (parameters.length > 5) ? (String)parameters[5] : null;
 		
 		String artifactPath = getResourcePath(new String[]{groupId, artifactId, version});
 		
 		String createArtifactRequst = 
-    			GovernanceSOAPMessageCreator.createAddArtifactRequest(groupId, artifactId, version);
+    			GovernanceSOAPMessageCreator.createAddArtifactRequest(groupId, artifactId, version, jarName, licenseType, packaginType);
 		
 		boolean isDependencyCreated = super.createAsset(artifactPath, createArtifactRequst);
 		

@@ -1,0 +1,7 @@
+<licenseTypes>
+  <licenseType name="apache" description="Apache License \n http://www.apache.org">
+     <matchingPatterns>
+	<matchingPattern>*apache</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+</licenseTypes>

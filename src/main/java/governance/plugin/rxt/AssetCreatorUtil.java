@@ -13,13 +13,21 @@ import governance.plugin.common.GovernanceSOAPMessageCreator;
 import governance.plugin.common.RegistrySOAPClient;
 import governance.plugin.common.XmlParser;
 
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class AssetCreatorUtil {
-
+	public static final String LICENSE_ELEMENT_NAME = "license";
+	public static final String JAR_FILE_ELEMENT_NAME = "jarName";
+	public static final String PACKAGINTYPE_ELEMENT_NAME = "packagingType"; 
+	public static final String MAVEN_BUNDEL_PLUGIN_KEY = "org.apache.felix:maven-bundle-plugin";
 	
 	private String genericArtifactManagerEndPointRef;
 	
@@ -43,8 +51,8 @@ public class AssetCreatorUtil {
     		StringWriter writer = new StringWriter();
 	        transformer.transform(new DOMSource(newAssetContent), new StreamResult(writer));
 	    	String assteContentText = writer.getBuffer().toString().replaceAll("\n|\r", "");
-	    	
 	    	String modifyAssetMessage = GovernanceSOAPMessageCreator.createEditArtifactMessage(AbstractAssetCreator.GREG_TRUNK_LOCATION + resourcePath, assetType, assteContentText);
+
 	    	RegistrySOAPClient.sendMessage(this.genericArtifactManagerEndPointRef, modifyAssetMessage);
         } catch (TransformerException e) {
 	        throw new MojoExecutionException(e.getMessage(), e);
@@ -92,4 +100,92 @@ public class AssetCreatorUtil {
 		return response;
 	}
 	
+	public static String getKey(Dependency dependecny){
+		return getKey(dependecny.getGroupId(), dependecny.getArtifactId(), dependecny.getVersion());
+	}
+	
+	public static String getKey(String groupId, String artifactId, String version){
+		StringBuilder key = new StringBuilder();
+		key.append(groupId);
+		key.append(":");
+		key.append(artifactId);
+		key.append(":");
+		key.append(version);
+		return key.toString();
+	}
+	
+	
+	public static void replaceFieldInOverviewTable(Document existingContent, String value, String elementName){
+		Node newNode = existingContent.createElement(elementName);
+		newNode.appendChild(existingContent.createTextNode(value));
+		Element overviewNode = (Element)existingContent.getElementsByTagName("overview").item(0);
+		
+		NodeList existingElements = overviewNode.getElementsByTagName(elementName);
+		for (int i = 0; i < existingElements.getLength(); i++){
+			overviewNode.removeChild(existingElements.item(i));
+		}
+		overviewNode.appendChild(newNode);
+	}
+	
+	public static Document addJARFileNameToAsset(Document assetContent, String jarFileName){
+		Element overviewNode = (Element)assetContent.getElementsByTagName("overview").item(0);
+		
+		NodeList existingElements = overviewNode.getElementsByTagName(AssetCreatorUtil.JAR_FILE_ELEMENT_NAME);
+		StringBuilder jarFileNames = new StringBuilder();
+		for (int i = 0; i < existingElements.getLength(); i++){
+			if (i == 0){
+				jarFileNames.append(existingElements.item(i).getTextContent());
+			}else{
+				jarFileNames.append(",");
+				jarFileNames.append(existingElements.item(i).getTextContent());
+			}
+			overviewNode.removeChild(existingElements.item(i));
+		}  
+		
+		if (jarFileNames.toString().isEmpty()){
+			jarFileNames.append(jarFileName);
+		}else if(!jarFileNames.toString().contains(jarFileName)){
+			jarFileNames.append(",");
+			jarFileNames.append(jarFileName);
+		}
+		
+		Node newNode = assetContent.createElement(AssetCreatorUtil.JAR_FILE_ELEMENT_NAME);
+		newNode.appendChild(assetContent.createTextNode(jarFileNames.toString()));
+		overviewNode.appendChild(newNode);
+		
+		return assetContent;
+	}
+	
+	public static boolean isJarsEmbeded(MavenProject project){
+		String packagingType = project.getPackaging();
+		if (packagingType.equals("bundle")){
+			Plugin bundelPlugin = project.getPlugin(MAVEN_BUNDEL_PLUGIN_KEY);
+			if (bundelPlugin != null){
+				Xpp3Dom pluginConfigs = (Xpp3Dom)bundelPlugin.getConfiguration();
+				if (pluginConfigs != null){
+					Xpp3Dom instuctionConfigs = pluginConfigs.getChild("instructions");
+					if (instuctionConfigs != null){
+						Xpp3Dom embedDependencyInstructions = instuctionConfigs.getChild("Embed-Dependency");
+						if (embedDependencyInstructions != null){
+							return true;
+						}
+					}
+					
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static Document addPackagingTypeToAsset(Document assetContent, String packageingType){
+		replaceFieldInOverviewTable(assetContent, packageingType, PACKAGINTYPE_ELEMENT_NAME);
+		return assetContent;
+	}
+	
+	public static Document addLicenseTypeToAssset(Document assetContent, String licenseType){
+		if (licenseType != null){
+			replaceFieldInOverviewTable(assetContent, licenseType, LICENSE_ELEMENT_NAME);
+		}
+		return assetContent;
+	}
 }
