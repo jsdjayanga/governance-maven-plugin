@@ -44,14 +44,14 @@ public class PackLicenseFileGenerateHandler {
 			String key = AssetCreatorUtil.getKey(project.getGroupId(), project.getArtifactId(), project.getVersion());
 			
 			if (assetDetails != null){
-				addLicenseEntryFromAssetContent(assetDetails, project, key, projectEntry.getKey());
+				addLicenseEntryFromAssetContent(assetDetails, key, projectEntry.getKey());
 			}else{
 				resourcePath = moduleCreator.getResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
 				assetDetails = assetCreatorUtil.getAssetContent(resourcePath);
 			}
 			
 			if (assetDetails != null){
-				addLicenseEntryFromAssetContent(assetDetails, project, key, projectEntry.getKey());
+				addLicenseEntryFromAssetContent(assetDetails, key, projectEntry.getKey());
 			}else{
 				licenseFile.addLicenseEntry(projectEntry.getKey(), LicenseFile.UNKOWN_ELEMENT, LicenseFile.UNKOWN_ELEMENT, key);
 			}
@@ -59,7 +59,7 @@ public class PackLicenseFileGenerateHandler {
 		licenseFile.generate();
 	}
 	
-	private void addLicenseEntryFromAssetContent(Document assetContent, MavenProject project, String key, String jarName) throws MojoExecutionException{
+	private void addLicenseEntryFromAssetContent(Document assetContent, String key, String jarName) throws MojoExecutionException{
 		String licenseType = LicenseFile.createLicenseEntryColumn(assetContent, AssetCreatorUtil.LICENSE_ELEMENT_NAME);
 		String packagingType = LicenseFile.createLicenseEntryColumn(assetContent, AssetCreatorUtil.PACKAGINTYPE_ELEMENT_NAME);
 		licenseFile.addLicenseEntry(jarName, licenseType, packagingType, key);

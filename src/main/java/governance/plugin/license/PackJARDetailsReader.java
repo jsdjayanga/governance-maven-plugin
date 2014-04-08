@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -28,6 +29,7 @@ public class PackJARDetailsReader {
 	public static final String POM_PROPERTIES_KEY_GROUPID = "groupId";
 	public static final String POM_PROPERTIES_KEY_ARTIFACTID = "artifactId";
 	private static HashMap<String, MavenProject> projectsInPack = new HashMap<String, MavenProject>();
+	private static HashSet<String> jars = new HashSet<String>();
 
 	public static HashMap<String, MavenProject> readPack(File packFile) throws MojoExecutionException {
 		projectsInPack.clear();
@@ -45,7 +47,6 @@ public class PackJARDetailsReader {
 	         	    processJarFile(jarFile, jarFileName, false);
 	            }
 	        }
-	        
 	        return projectsInPack;
         }catch (Exception e) {
 	       throw new MojoExecutionException(e.getMessage(), e);
@@ -53,6 +54,7 @@ public class PackJARDetailsReader {
 	}
 	
 	private static void processJarFile(JarFile jarFile, String jarFileName, boolean isRecursed) throws MojoExecutionException{
+		jars.add(jarFileName);
 		try {
             Properties pomProperties = null;
      	    MavenProject project = null;
@@ -71,11 +73,6 @@ public class PackJARDetailsReader {
      	    		File pomFile = copyZipEntryToFile(jarFile, jarEntry, "pom", "xml");
      	    		Model projectModel = XmlParser.parsePom(pomFile);
      	    		project = new MavenProject(projectModel);
-     	    		
-     	    		if (isRecursed){
-     	    			System.out.println("jarinbundle =>" + jarFileName);
-     	    			project.setPackaging("jarinbundle");
-     	    		}
      	    		projectsInPack.put(jarFileName, project);
      	    	}else if (jarEntry.getName().contains("pom.properties")){
      	    		File pomPropertiesFile = copyZipEntryToFile(jarFile, jarEntry, "pom", "properties");
