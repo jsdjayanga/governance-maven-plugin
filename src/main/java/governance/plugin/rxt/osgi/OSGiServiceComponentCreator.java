@@ -6,6 +6,7 @@ import governance.plugin.util.PathNameResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class OSGiServiceComponentCreator extends AbstractAssetCreator {
 
         String name = className.substring(className.lastIndexOf(".") + 1);
         String namespace = className.substring(0, className.lastIndexOf("."));
-        namespace = PathNameResolver.PackageToNamespace(namespace);
+        namespace = PathNameResolver.reverseNamespace(namespace);
 
         String OSGiServicePath = getResourcePath(new String[]{name, namespace});
 
@@ -67,6 +68,6 @@ public class OSGiServiceComponentCreator extends AbstractAssetCreator {
         String name = parameters[0];
         String namespace = parameters[1];
 
-        return PathNameResolver.getResourcePath(name, namespace, OSGiServiceComponentCreator.GREG_SERVICE_RESOURCE_PATH);
+        return OSGiServiceComponentCreator.GREG_SERVICE_RESOURCE_PATH + PathNameResolver.reverseNamespace(namespace).replace('.', File.separatorChar) + File.separator + name;
     }
 }

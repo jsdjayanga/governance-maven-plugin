@@ -180,7 +180,7 @@ public class OSGiDependencyHandler {
                 getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
 
         String className = (String)parameters.get("className");
-        String namespace = PathNameResolver.PackageToNamespace(className.substring(0, className.lastIndexOf(".")));
+        String namespace = PathNameResolver.reverseNamespace(className.substring(0, className.lastIndexOf(".")));
 
         String dependencyReosurcePath = osgiServiceComponentCreator.
                 getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
@@ -200,7 +200,7 @@ public class OSGiDependencyHandler {
 
     private void markAssociationsWithOSGiServicesMap(Map<String, Object> parameters) throws MojoExecutionException {
         String className = (String)parameters.get("className");
-        String namespace = PathNameResolver.PackageToNamespace(className.substring(0, className.lastIndexOf(".")));
+        String namespace = PathNameResolver.reverseNamespace(className.substring(0, className.lastIndexOf(".")));
 
         String reosurcePath = osgiServiceComponentCreator.
                 getAbsoluteResourcePath(new String[]{className.substring(className.lastIndexOf(".") + 1), namespace});
@@ -215,7 +215,7 @@ public class OSGiDependencyHandler {
 
                     String dependencyClassName = refInterface.substring(refInterface.lastIndexOf(".") + 1);
                     String dependencyNamespace = refInterface.substring(0, refInterface.lastIndexOf("."));
-                    dependencyNamespace = PathNameResolver.PackageToNamespace(dependencyNamespace);
+                    dependencyNamespace = PathNameResolver.reverseNamespace(dependencyNamespace);
 
                     String dependencyReosurcePath = osgiServiceCreator.
                             getAbsoluteResourcePath(new String[]{dependencyClassName, dependencyNamespace});
