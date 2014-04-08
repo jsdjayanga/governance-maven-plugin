@@ -14,6 +14,7 @@ public class GRegDependencyHandler {
 
 	public static final String GREG_ASSOCIATION_TYPE_DEPENDS = "depends";
 	public static final String GREG_ASSOCIATION_TYPE_USEDBY = "usedBy";
+    public static final String GREG_ASSOCIATION_TYPE_IMPORTS = "imports";
 	
 	public static final String GREG_ASSOCIATION_ACTION_ADD = "add";
 	public static final String GREG_ASSOCIATION_ACTION_REMOVE = "remove";

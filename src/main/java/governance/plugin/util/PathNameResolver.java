@@ -35,4 +35,16 @@ public class PathNameResolver {
 
         return resourcePath  + sb.toString() + name;
     }
+
+    public static String reverseNamespace(String namespace){
+        String[] split = namespace.split("[.]");
+        StringBuilder sb = new StringBuilder();
+        for (int i = split.length - 1; i >= 0; i--) {
+            sb.append(split[i]);
+            if (i > 0){
+                sb.append(".");
+            }
+        }
+        return sb.toString();
+    }
 }

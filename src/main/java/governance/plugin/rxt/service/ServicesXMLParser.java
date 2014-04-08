@@ -59,14 +59,11 @@ public class ServicesXMLParser {
                     }
                 }
             } catch (SAXException e) {
-                //System.out.println("Failed to parse the file. SAXException (" + file.getPath() + ")");
                 throw new SAXException("Failed to parse the file. SAXException (" + file.getPath() + ")", e);
             } catch (IOException e) {
-                //System.out.println("Failed to parse the file. IOException (" + file.getPath() + ")");
                 throw new SAXException("Failed to parse the file. IOException (" + file.getPath() + ")", e);
             }
         } catch (ParserConfigurationException e) {
-            //System.out.println("Failed to parse the file. ParserConfigurationException (" + file.getPath() + ")");
             throw e;
         }
 
