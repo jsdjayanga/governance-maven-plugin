@@ -1,8 +1,8 @@
 <artifactType type="application/vnd.wso2-osgiservice+xml" shortName="osgiservice" singularLabel="OSGiService" pluralLabel="OSGiServices"
               hasNamespace="false" iconSet="27">
-    <storagePath>/trunk/osgiservices/@{namespace}/@{name}</storagePath>
+    <storagePath>/trunk/osgiservices/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
-    <namespaceAttribute>overview_namespace</namespaceAttribute>
+    <interfaceAttribute>overview_interface</interfaceAttribute>
     <lifecycle>OSGiServiceLifeCycle</lifecycle>
     <ui>
         <list>
@@ -12,8 +12,8 @@
             <column name="Version">
                 <data type="path" value="overview_version" href="@{storagePath}"/>
             </column>
-            <column name="Namespace">
-                <data type="text" value="overview_namespace"/>
+            <column name="Interface">
+                <data type="text" value="overview_interface"/>
             </column>
         </list>
     </ui>
@@ -26,7 +26,7 @@
                 <name label="Name">Name</name>
             </field>
             <field type="text" required="true" readonly="true">
-                <name label="Namespace">Namespace</name>
+                <name label="Interface">Interface</name>
             </field>
             <field type="text">
                 <name label="Version">Version</name>

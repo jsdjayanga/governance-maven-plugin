@@ -258,7 +258,7 @@ public class GovernanceSOAPMessageCreator {
         return soapRequest.toString();
     }
 
-    public static String  createAddOSGiServiceRequest(String name, String namespace, String version, String description){
+    public static String  createAddOSGiServiceRequest(String refName, String refInterface, String version, String description){
         StringBuffer soapRequest = new StringBuffer();
         soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
         soapRequest.append("xmlns:ser='http://services.add.osgiservice.governance.carbon.wso2.org'>");
@@ -266,11 +266,11 @@ public class GovernanceSOAPMessageCreator {
         soapRequest.append("<soapenv:Body>");
         soapRequest.append("<ser:addOSGiService>");
         soapRequest.append("<ser:info><![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview><name>");
-        soapRequest.append(name);
+        soapRequest.append(refName);
         soapRequest.append("</name>");
-        soapRequest.append("<namespace>");
-        soapRequest.append(namespace);
-        soapRequest.append("</namespace>");
+        soapRequest.append("<interface>");
+        soapRequest.append(refInterface);
+        soapRequest.append("</interface>");
         soapRequest.append("<version>");
         soapRequest.append(version);
         soapRequest.append("</version>");

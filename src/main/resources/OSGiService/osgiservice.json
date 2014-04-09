@@ -97,7 +97,7 @@
             "value": false
         },
  	    {
-            "field": "overview.namespace",
+            "field": "overview.interface",
             "name": "editable",
             "value": false
         },
