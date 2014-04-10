@@ -122,7 +122,7 @@ public class OSGiDependencyHandler {
                         createDependentOSGiServices(osgiServiceComponentInfo);
 
                         osgiServiceComponentCreator.create(osgiServiceComponentInfo);
-                        createAssociations(osgiServiceComponentInfo, project, file);
+                        createAssociationsWithModule(osgiServiceComponentInfo, project, file);
 
                         markAssociationsWithOSGiServicesMap(osgiServiceComponentInfo);
                     }
@@ -171,7 +171,7 @@ public class OSGiDependencyHandler {
         return null;
     }
 
-    public void createAssociations(Map<String, Object> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
+    public void createAssociationsWithModule(Map<String, Object> parameters, MavenProject project, File currentPOM) throws MojoExecutionException {
 
         String moduleAbsolutPath = moduleCreator.
                 getAbsoluteResourcePath(new String[]{project.getArtifactId(), project.getVersion()});
@@ -188,11 +188,11 @@ public class OSGiDependencyHandler {
 
         // Adding the dependency
         gregDependencyHandler.addAssociation(moduleAbsolutPath, dependencyReosurcePath,
-                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
+                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_CONTAINS);
 
         // Adding the invert association(i.e.dependency is usedBy source)
         gregDependencyHandler.addAssociation(dependencyReosurcePath, moduleAbsolutPath,
-                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_USEDBY);
+                GRegDependencyHandler.GREG_ASSOCIATION_TYPE_DEPENDS);
     }
 
     private void markAssociationsWithOSGiServicesMap(Map<String, Object> parameters) throws MojoExecutionException {
