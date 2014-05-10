@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<artifactType type="application/vnd.wso2-other-dependency+xml" shortName="other-dependency" singularLabel="Other Dependency" pluralLabel="Other Dependencies" hasNamespace="false" iconSet="27">
+    <storagePath>/trunk/other-dependency/@{overview_name}</storagePath>
+    <nameAttribute>overview_name</nameAttribute>
+    <lifecycle>OtherDependencyLifeCycle</lifecycle>
+    <ui>
+        <list>
+            <column name="Dependency Name">
+                <data type="path" value="overview_name" href="@{storagePath}"/>
+            </column>
+            <column name="Dependency Version">
+                <data type="path" value="overview_version" href="@{storagePath}"/>
+            </column>
+   	    <column name="Description">
+                <data type="text" value="overview_description"/>
+            </column>
+        </list>
+    </ui>
+    <content>
+        <table name="Overview">
+	    <field type="text" required="true">
+                <name>Provider</name>
+            </field>
+            <field type="text" required="true" readonly="true">
+                <name label="Archive Name">Name</name>
+            </field>
+            <field type="text">
+                <name label="Version">Version</name>
+            </field>
+            <field type="text">
+                <name label="Description">Description</name>
+            </field>
+	    <field type="text">
+                <name label="License">License</name>
+            </field>
+	    <field type="text">
+                <name label="Packaging Type">Packaging Type</name>
+            </field>
+        </table>
+	<table name="Images">
+            <field type="text" required="true">
+                <name>Thumbnail</name>
+            </field>
+            <field type="text" required="true">
+                <name>Banner</name>
+            </field>
+        </table>
+    </content>
+</artifactType>
