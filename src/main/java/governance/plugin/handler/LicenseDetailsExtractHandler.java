@@ -126,7 +126,7 @@ public class LicenseDetailsExtractHandler {
 			
 			if (assetContent == null){
 				throw new MojoExecutionException("Cannot find information of dependency " + dependecny.getGroupId() + ":" 
-														+ dependecny.getArtifactId() + ":" + dependecny.getVersion() + " in the repostory");
+														+ dependecny.getArtifactId() + ":" + dependecny.getVersion() + " in the repostory. Execute goal 'module' to create all modules/artifacts");
 			}
 			
 			// Update the contents of the asset to have the license detials

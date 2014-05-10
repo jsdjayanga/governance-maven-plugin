@@ -29,7 +29,7 @@ public class PackJARDetailsReader {
 	public static final String POM_PROPERTIES_KEY_GROUPID = "groupId";
 	public static final String POM_PROPERTIES_KEY_ARTIFACTID = "artifactId";
 	private static HashMap<String, MavenProject> projectsInPack = new HashMap<String, MavenProject>();
-	private static HashSet<String> jars = new HashSet<String>();
+	private static HashSet<String> nonMavenjars = new HashSet<String>();
 
 	public static HashMap<String, MavenProject> readPack(File packFile) throws MojoExecutionException {
 		projectsInPack.clear();
@@ -41,7 +41,7 @@ public class PackJARDetailsReader {
 	            final ZipEntry packEntry = entries.nextElement();
 	            
 	            if (packEntry.getName().endsWith(".jar")){
-	            	File tempJarFile = copyZipEntryToFile(pack, packEntry, "tempFile", "jar");
+	            	File tempJarFile = zipEntryToFile(pack, packEntry, "tempFile", "jar");
 	         	    JarFile jarFile = new JarFile(tempJarFile);
 	         	    String jarFileName = packEntry.getName().substring(packEntry.getName().lastIndexOf(File.separatorChar) + 1);
 	         	    processJarFile(jarFile, jarFileName, false);
@@ -54,7 +54,6 @@ public class PackJARDetailsReader {
 	}
 	
 	private static void processJarFile(JarFile jarFile, String jarFileName, boolean isRecursed) throws MojoExecutionException{
-		jars.add(jarFileName);
 		try {
             Properties pomProperties = null;
      	    MavenProject project = null;
@@ -62,25 +61,28 @@ public class PackJARDetailsReader {
      	    
      	    while (jarEntries.hasMoreElements()){
      	    	final JarEntry jarEntry = jarEntries.nextElement();
-     	    	
+
      	    	if (jarEntry.getName().endsWith(".jar")){
-     	    		File tempJarFile = copyZipEntryToFile(jarFile, jarEntry, "tempFile", "jar");
+     	    		File tempJarFile = zipEntryToFile(jarFile, jarEntry, "tempFile", "jar");
 	         	    JarFile innerJarFile = new JarFile(tempJarFile);
 	         	    String innerJarFileName = jarEntry.getName().substring(jarEntry.getName().lastIndexOf(File.separatorChar) + 1);
 	         	    processJarFile(innerJarFile, innerJarFileName, true);
      	    	}
      	    	else if (jarEntry.getName().contains("pom.xml")){// check for mar files
-     	    		File pomFile = copyZipEntryToFile(jarFile, jarEntry, "pom", "xml");
+     	    		File pomFile = zipEntryToFile(jarFile, jarEntry, "pom", "xml");
      	    		Model projectModel = XmlParser.parsePom(pomFile);
      	    		project = new MavenProject(projectModel);
+     	    		project.setPackaging((isRecursed) ? "jarinbundle" : projectModel.getPackaging());
      	    		projectsInPack.put(jarFileName, project);
      	    	}else if (jarEntry.getName().contains("pom.properties")){
-     	    		File pomPropertiesFile = copyZipEntryToFile(jarFile, jarEntry, "pom", "properties");
+     	    		File pomPropertiesFile = zipEntryToFile(jarFile, jarEntry, "pom", "properties");
      	    		pomProperties = readPomPropertiesFile(pomPropertiesFile);
      	    	}
      	    }
      	    
-     	    if (pomProperties != null && project != null){
+     	    if (pomProperties == null && project == null){
+     	    	nonMavenjars.add(jarFileName); 
+     	    }else if (pomProperties != null && project != null){
         		setProperties(project, pomProperties);
         	}
 		}catch (Exception e) {
@@ -88,10 +90,11 @@ public class PackJARDetailsReader {
 	    }
 	}
 	
-	public static File copyZipEntryToFile(ZipFile zipFile, ZipEntry entry, String filePrefix, String fileSuffix) throws IOException{
+	public static File zipEntryToFile(ZipFile zipFile, ZipEntry entry, String filePrefix, String fileSuffix) throws IOException{
 		File tempFile = File.createTempFile(filePrefix, fileSuffix);
- 	    FileOutputStream tempOut = new FileOutputStream(tempFile);
+ 	    FileOutputStream tempOut = new FileOutputStream(tempFile); 
  	    IOUtils.copy(zipFile.getInputStream(new ZipEntry(entry.getName())), tempOut);
+ 	    tempOut.close();
 		return tempFile;
 	}
 	
@@ -125,5 +128,9 @@ public class PackJARDetailsReader {
 		if (project.getArtifactId().contains("$") && properties.get(POM_PROPERTIES_KEY_ARTIFACTID) != null){
 			project.setArtifactId((String)properties.get(POM_PROPERTIES_KEY_ARTIFACTID));
 		}
+	}
+	
+	public static HashSet<String> getNonMavenJars(){
+		return nonMavenjars;
 	}
 }

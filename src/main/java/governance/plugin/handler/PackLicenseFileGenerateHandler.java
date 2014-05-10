@@ -2,6 +2,7 @@ package governance.plugin.handler;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import governance.plugin.license.LicenseFile;
@@ -9,6 +10,7 @@ import governance.plugin.license.PackJARDetailsReader;
 import governance.plugin.rxt.AssetCreatorUtil;
 import governance.plugin.rxt.artifact.ArtifactCreator;
 import governance.plugin.rxt.module.ModuleCreator;
+import governance.plugin.rxt.otherdependency.OtherDependencyCreator;
 import governance.plugin.util.Configurations;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -24,6 +26,7 @@ public class PackLicenseFileGenerateHandler {
 	AssetCreatorUtil assetCreatorUtil;
 	HashMap<String, MavenProject> jarsInPack = new HashMap<String, MavenProject>();// Key-JarFileName, Value-Project model created form the pom.xml of the jar 
 	LicenseFile licenseFile;
+	OtherDependencyCreator otherDependencyCreator;
 	
 	public PackLicenseFileGenerateHandler(Configurations configurations, Log logger) throws MojoExecutionException {
 	    this.logger = logger;
@@ -31,6 +34,7 @@ public class PackLicenseFileGenerateHandler {
 	    moduleCreator = new ModuleCreator(logger, configurations.getGergServiceUrl());
 	    artifactCreator = new ArtifactCreator(logger, configurations.getGergServiceUrl());
 	    assetCreatorUtil = new AssetCreatorUtil(configurations.getGergServiceUrl());
+	    otherDependencyCreator = new OtherDependencyCreator(logger, configurations.getGergServiceUrl());
 	    licenseFile = new LicenseFile(logger);
     }
 
@@ -54,6 +58,19 @@ public class PackLicenseFileGenerateHandler {
 				addLicenseEntryFromAssetContent(assetDetails, key, projectEntry.getKey());
 			}else{
 				licenseFile.addLicenseEntry(projectEntry.getKey(), LicenseFile.UNKOWN_ELEMENT, LicenseFile.UNKOWN_ELEMENT, key);
+			}
+		}
+		
+		HashSet<String> nonMavenJars = PackJARDetailsReader.getNonMavenJars();
+		
+		for (String jarFileName : nonMavenJars){
+			String resourcePath = otherDependencyCreator.getResourcePath(new String[]{jarFileName});
+			Document assetDetails = assetCreatorUtil.getAssetContent(resourcePath);
+			
+			if (assetDetails != null){
+				addLicenseEntryFromAssetContent(assetDetails, jarFileName, jarFileName);
+			}else{
+				licenseFile.addLicenseEntry(jarFileName, LicenseFile.UNKOWN_ELEMENT, LicenseFile.UNKOWN_ELEMENT, jarFileName);
 			}
 		}
 		licenseFile.generate();

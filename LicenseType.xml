@@ -1,0 +1,47 @@
+<licenseTypes>
+  <licenseType id="apache2" name="Apache License Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.html">
+     <matchingPatterns>
+	<matchingPattern>(A|a)pache.*2.*</matchingPattern>
+	<matchingPattern>Apache License Version 2.0</matchingPattern>
+	<matchingPattern>Apache License, Version 2.0</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="apache" name="Apache License Version 1.0" url="http://www.apache.org/licenses/LICENSE-1.0.html">
+     <matchingPatterns>
+	<matchingPattern>(A|a)pache.*1.*</matchingPattern>
+	<matchingPattern>Apache License$</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="lgpl" name="Lesser General Public License" url="http://www.opensource.org/licenses/lgpl-2.1.php">
+     <matchingPatterns>
+	<matchingPattern>GNU Lesser Public License</matchingPattern>
+	<matchingPattern>The GNU General Public License, Version 2</matchingPattern>
+	<matchingPattern>.*GNU LESSER GENERAL PUBLIC LICENSE.*</matchingPattern>
+	<matchingPattern>.*GNU Lesser General Public License.*</matchingPattern>
+	<matchingPattern>(lgpl|LGPL)</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="mit" name="MIT License" url="http://www.opensource.org/licenses/mit-license.php">
+     <matchingPatterns>
+	<matchingPattern>MIT License.*</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="bsd" name="Berkeley License" url="http://www.opensource.org/licenses/bsd-license.php">
+     <matchingPatterns>
+	<matchingPattern>(BSD|bsd)</matchingPattern>
+	<matchingPattern>.* (BSD|bsd) .*</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="cpl1" name="Common Public License" url="http://opensource.org/licenses/cpl1.0.php">
+     <matchingPatterns>
+	<matchingPattern>Common Public License.*</matchingPattern>
+	<matchingPattern>(CPL|cpl)</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+  <licenseType id="cddl" name="Common Development and Distribution License" url="http://www.opensource.org/licenses/cddl1.php">
+     <matchingPatterns>
+	<matchingPattern>CDDL License</matchingPattern>
+	<matchingPattern>(CDDL|cddl) .*</matchingPattern>
+     </matchingPatterns>
+  </licenseType>
+</licenseTypes>

@@ -3,6 +3,7 @@ package governance.plugin.handler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -17,6 +18,7 @@ import governance.plugin.license.PackJARDetailsReader;
 import governance.plugin.rxt.AssetCreatorUtil;
 import governance.plugin.rxt.artifact.ArtifactCreator;
 import governance.plugin.rxt.module.ModuleCreator;
+import governance.plugin.rxt.otherdependency.OtherDependencyCreator;
 import governance.plugin.util.Configurations;
 
 public class PackLicenseDetailsExtractHandler {
@@ -26,6 +28,7 @@ public class PackLicenseDetailsExtractHandler {
 	ModuleCreator moduleCreator;
 	ArtifactCreator artifactCreator;
 	AssetCreatorUtil assetCreatorUtil;
+	OtherDependencyCreator otherDependencyCreator;
 	HashMap<String, MavenProject> jarsInPack = new HashMap<String, MavenProject>();// Key-JarFileName, Value-Project model created form the pom.xml of the jar 
 	HashMap<String, String> licenseInfo = new HashMap<String, String>(); // Key-dependeny, Value-normalized license type 
 	int updatedAssetCount = 0;
@@ -37,7 +40,15 @@ public class PackLicenseDetailsExtractHandler {
 	    moduleCreator = new ModuleCreator(logger, configurations.getGergServiceUrl());
 	    artifactCreator = new ArtifactCreator(logger, configurations.getGergServiceUrl());
 	    assetCreatorUtil = new AssetCreatorUtil(configurations.getGergServiceUrl());
+	    otherDependencyCreator = new OtherDependencyCreator(logger, configurations.getGergServiceUrl());
     }
+	
+	private void addNonMavenJarsDetails() throws MojoExecutionException{
+		HashSet<String> nonMavenJars = PackJARDetailsReader.getNonMavenJars();
+		for (String jarName : nonMavenJars){
+			otherDependencyCreator.create(new String[]{jarName, "jar"});
+		}
+	}
 	
 	public void process(File pack, List<MavenProject> pomTree) throws MojoExecutionException{
 		logger.info("Extracting license details...");
@@ -50,10 +61,13 @@ public class PackLicenseDetailsExtractHandler {
 		logger.info("Updating license details..");
 		updateLicenseInformation();
 		
+		logger.info("Adding detials non maven jars");
+		addNonMavenJarsDetails();
+		
 		logger.info("Summary. ");
 		logger.info("-Updated Artifact/Module Count = " + updatedAssetCount); 
 		logger.info("-Created Artifact Count = " + artifactCreator.getCreatedAssetCount());
-		logger.info("-Total JAR File Count = " + jarsInPack.size());
+		logger.info("-Total JAR File Count = " + jarsInPack.size() + PackJARDetailsReader.getNonMavenJars().size());
 	}
 	
 	private void indexLicenseInformation(List<MavenProject> pomTree){
@@ -100,12 +114,12 @@ public class PackLicenseDetailsExtractHandler {
 			}else{
 				resourcePath = artifactCreator.getResourcePath(new String[]{groupId, artifactId, version});
 				assetDetails = assetCreatorUtil.getAssetContent(resourcePath);
-			}
-			
-			if (assetDetails != null){
-				updateAsset(resourcePath, assetDetails, "artifact",  projectEntry.getKey(), key, project.getPackaging());
-			}else{
-				artifactCreator.create(new String[]{groupId, artifactId, version, projectEntry.getKey(), licenseInfo.get(key), project.getPackaging()});
+				
+				if (assetDetails != null){
+					updateAsset(resourcePath, assetDetails, "artifact",  projectEntry.getKey(), key, project.getPackaging());
+				}else{
+					artifactCreator.create(new String[]{groupId, artifactId, version, projectEntry.getKey(), licenseInfo.get(key), project.getPackaging()});
+				}
 			}
 		}
 	}

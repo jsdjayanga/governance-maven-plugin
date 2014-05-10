@@ -40,6 +40,43 @@ public class GovernanceSOAPMessageCreator {
 		return soapRequest.toString();
 	}
 	
+	public static String createOtherDependency(String archiveName, String packingType, String version, String licenseType){
+		StringBuffer soapRequest = new StringBuffer();
+		soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
+		soapRequest.append("xmlns:ser='http://services.add.other-dependency.governance.carbon.wso2.org'>");
+		soapRequest.append("<soapenv:Header/>");
+		soapRequest.append("<soapenv:Body>");
+		soapRequest.append("<ser:addOtherDependency>");
+		soapRequest.append("<ser:info><![CDATA[<metadata xmlns='http://www.wso2.org/governance/metadata'><overview>");
+		soapRequest.append("<name>");
+		soapRequest.append(archiveName);
+		soapRequest.append("</name>");
+		if (version != null && !version.isEmpty()){
+        	soapRequest.append("<version>");
+        	soapRequest.append(version);
+        	soapRequest.append("</version>");
+		}
+		soapRequest.append("<description>This is a non deterministic dependency</description>");
+		if (licenseType != null && !licenseType.isEmpty()){
+    		soapRequest.append("<license>");
+    		soapRequest.append(licenseType);
+    		soapRequest.append("</license>");
+		}
+		soapRequest.append("<packagingType>");
+		soapRequest.append(packingType);
+		soapRequest.append("</packagingType>");
+		soapRequest.append(GovernanceSOAPMessageCreator.getMetaDataTags());
+		soapRequest.append("</overview>");
+		soapRequest.append(GovernanceSOAPMessageCreator.getImageTags());
+		soapRequest.append("</metadata>]]></ser:info>");
+		soapRequest.append("</ser:addOtherDependency>");
+		soapRequest.append("</soapenv:Body>");
+		soapRequest.append("</soapenv:Envelope>");
+		return soapRequest.toString();
+	}
+	
+	
+	
 	public static String createGetArtifactContentRequest(String path){
 		StringBuffer soapRequest = new StringBuffer();
 		soapRequest.append("<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' ");
@@ -54,8 +91,8 @@ public class GovernanceSOAPMessageCreator {
 		soapRequest.append("</soapenvBody>");
 		soapRequest.append("</soapenv:Envelope>");
 		return soapRequest.toString();
-
 	}
+
 
 	public static String createAddArtifactRequest(String groupId, String artifactId, String version, String jarName, String licenseType, String packagingType){
 		StringBuffer soapRequest = new StringBuffer();

@@ -1,0 +1,105 @@
+<aspect name="OtherDependencyLifeCycle" class="org.wso2.jaggery.scxml.aspects.JaggeryTravellingPermissionLifeCycle">
+    <configuration type="literal">
+        <lifecycle>
+            <scxml xmlns="http://www.w3.org/2005/07/scxml"
+                   version="1.0"
+                   initialstate="Unapproved">
+                <state id="Unapproved">
+                    <datamodel>
+                        <data name="transitionExecution">
+                            <execution forEvent="Approve" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Approved"
+                                           value="Internal/private_{asset_author}:+get,+add,-delete,+authorize"/>
+                                <parameter name="STATE_RULE2:Approved" value="Internal/reviewer:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE3:Approved" value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                            <execution forEvent="Depricate" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Depricated"
+                                           value="Internal/private_{asset_author}:+add,+delete,+authorize"/>
+                                <parameter name="STATE_RULE2:Depricated" value="Internal/reviewer:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE3:Depricated" value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                        </data>
+                    </datamodel>
+                    <transition event="Approve" target="Approved"/>
+                    <transition event="Depricate" target="Depricated"/>
+                </state>
+                <state id="Approved">
+                    <datamodel>
+                        <data name="transitionExecution">
+                            <execution forEvent="Depricate" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Depricated"
+                                           value="Internal/private_{asset_author}:+add,+delete,+authorize"/>
+                                <parameter name="STATE_RULE2:Depricated"
+                                           value="Internal/reviewer:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE3:Depricated"
+                                           value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+			    <execution forEvent="Unapprove" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Unapproved"
+                                           value="Internal/private_{asset_author}:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE2:Unapproved" value="Internal/reviewer:+add,-delete,+authorize"/>
+                                <parameter name="STATE_RULE3:Unapproved" value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                        </data>
+                    </datamodel>
+                    <transition event="Depricate" target="Depricated"/>
+		    <transition event="Unapprove" target="Unapproved"/>
+                </state>
+                <state id="Depricated">
+                    <datamodel>
+			<data name="transitionExecution">
+                            <execution forEvent="Unapprove" class="org.wso2.jaggery.scxml.generic.GenericExecutor">
+                                <parameter name="PERMISSION:get"
+                                           value="http://www.wso2.org/projects/registry/actions/get"/>
+                                <parameter name="PERMISSION:add"
+                                           value="http://www.wso2.org/projects/registry/actions/add"/>
+                                <parameter name="PERMISSION:delete"
+                                           value="http://www.wso2.org/projects/registry/actions/delete"/>
+                                <parameter name="PERMISSION:authorize" value="authorize"/>
+
+                                <parameter name="STATE_RULE1:Unapproved"
+                                           value="Internal/private_{asset_author}:-add,-delete,-authorize"/>
+                                <parameter name="STATE_RULE2:Unapproved" value="Internal/reviewer:+add,-delete,+authorize"/>
+                                <parameter name="STATE_RULE3:Unapproved" value="Internal/everyone:-add,-delete,-authorize"/>
+                            </execution>
+                        </data>
+                    </datamodel>
+                    <transition event="Unapprove" target="Unapproved"/>
+                </state>
+            </scxml>
+        </lifecycle>
+    </configuration>
+</aspect>

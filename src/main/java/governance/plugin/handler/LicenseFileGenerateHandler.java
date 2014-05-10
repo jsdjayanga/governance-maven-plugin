@@ -48,6 +48,7 @@ public class LicenseFileGenerateHandler {
 			for (Dependency dependecny : entry.getValue().getDependencies()){
 				String resourcePath = moduleCreator.getResourcePath(new String[]{dependecny.getArtifactId(), dependecny.getVersion()});
 				Document assetContentElement = assetCreatorUtil.getAssetContent(resourcePath);
+				
 				if (assetContentElement == null){
 					resourcePath = artifactCreator.getResourcePath(new String[]{dependecny.getGroupId(), dependecny.getArtifactId(), dependecny.getVersion()});
 					assetContentElement = assetCreatorUtil.getAssetContent(resourcePath);
@@ -58,7 +59,7 @@ public class LicenseFileGenerateHandler {
 							+ dependecny.getArtifactId() + ":" + dependecny.getVersion() + " in the repostory");
 				}else{
 					String license = LicenseFile.createLicenseEntryColumn(assetContentElement, AssetCreatorUtil.LICENSE_ELEMENT_NAME);
-					String jarName = LicenseFile.createLicenseEntryColumn(assetContentElement, AssetCreatorUtil.JAR_FILE_ELEMENT_NAME);
+					String jarName = LicenseFile.createLicenseEntryColumn(assetContentElement, AssetCreatorUtil.JAR_FILE_ELEMENT_NAME).split(",")[0];
 					String packagingType = LicenseFile.createLicenseEntryColumn(assetContentElement, AssetCreatorUtil.PACKAGINTYPE_ELEMENT_NAME);
 					String key = AssetCreatorUtil.getKey(dependecny);
 					licenseFile.addLicenseEntry(jarName, license, packagingType, key);
@@ -66,7 +67,6 @@ public class LicenseFileGenerateHandler {
 				
 			}
 		}
-		
 		licenseFile.generate();
 	}
 }

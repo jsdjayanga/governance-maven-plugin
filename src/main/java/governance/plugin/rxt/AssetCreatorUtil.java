@@ -52,7 +52,6 @@ public class AssetCreatorUtil {
 	        transformer.transform(new DOMSource(newAssetContent), new StreamResult(writer));
 	    	String assteContentText = writer.getBuffer().toString().replaceAll("\n|\r", "");
 	    	String modifyAssetMessage = GovernanceSOAPMessageCreator.createEditArtifactMessage(AbstractAssetCreator.GREG_TRUNK_LOCATION + resourcePath, assetType, assteContentText);
-
 	    	RegistrySOAPClient.sendMessage(this.genericArtifactManagerEndPointRef, modifyAssetMessage);
         } catch (TransformerException e) {
 	        throw new MojoExecutionException(e.getMessage(), e);
